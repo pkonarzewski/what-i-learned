@@ -1,0 +1,8 @@
+django
+djangorestframework
+pygments
+httpie
+flake8
+coreapi
+pyyaml
+coreapi-cli
