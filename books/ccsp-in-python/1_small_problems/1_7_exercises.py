@@ -128,6 +128,12 @@ print(compressed.decompress())
 
 
 #%% 3.
+"""
+Write a solver for The Towers of Hanoi that works for any number of towers.
+"""
 
 
 #%% 4.
+"""
+Use a one-time pad to encrypt and decrypt images.
+"""
