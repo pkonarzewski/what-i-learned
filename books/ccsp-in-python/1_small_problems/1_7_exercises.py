@@ -52,7 +52,7 @@ class SequenceOfBits:
 
     def __next__(self):
         self.n += 1
-        if self.n > self.element_number:
+        if self.n >= self.element_number:
             raise StopIteration
         return self.__getitem__(self.n)
 
@@ -67,6 +67,10 @@ class SequenceOfBits:
 
 # test
 sob = SequenceOfBits()
+sob.add(0b00)
+sob.add(0b01)
+sob.add(0b10)
+sob.add(0b11)
 sob.add(0b00)
 sob.add(0b01)
 sob.add(0b10)
@@ -114,7 +118,7 @@ class CompressedGene:
 
 from sys import getsizeof
 
-original: str = "TAGGGATTAACCGTTATATATATATAGCCATGGATCGATTATATAGGGATTAACCGTTATATATATATAGCCATGGATCGATTATA"
+original: str = "TAGGGATTAACCGTTATATATATATAGCCATGGATCGATTATATAGGGATTAACCGTTATATATATATAGCCATGGATCGATTATA"*100
 print('original is {} bytes'.format(getsizeof(original)))
 compressed: CompressedGene = CompressedGene(original)
 print('compresed is {} bytes'.format(getsizeof(compressed)))
