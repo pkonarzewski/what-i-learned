@@ -132,8 +132,74 @@ print(compressed.decompress())
 Write a solver for The Towers of Hanoi that works for any number of towers.
 """
 
+from typing import TypeVar, Generic, List
+T = TypeVar('T')
+
+class Stack(Generic[T]):
+
+    def __init__(self) -> None:
+        self._container: List[T] = []
+
+    def push(self, item: T) -> None:
+        self._container.append(item)
+
+    def pop(self) -> T:
+        return self._container.pop()
+
+    def __repr__(self) -> str:
+        return repr(self._container)
+
+def hanoi(begin, end, temp, n):
+    if n == 1:
+        end.push(begin.pop())
+    else:
+        hanoi(begin, temp, end, n-1)
+        hanoi(begin, end, temp, 1)
+        hanoi(temp, end, begin, n-1)
+
+
+num_discs: int = 16
+num_towers: int = 4
+
+towers = [Stack() for _ in range(num_towers)]
+for i in range(1, num_discs + 1):
+    towers[0].push(i)
+
+print(towers)
+hanoi(towers[0], towers[num_towers-1], towers[num_towers-2], num_discs)
+print(towers)
+
 
 #%% 4.
 """
 Use a one-time pad to encrypt and decrypt images.
 """
+import os
+from secrets import token_bytes
+
+cpath = os.path.dirname(os.path.abspath(__file__))
+
+def random_key(length: int) -> int:
+    tb: bytes = token_bytes(length)
+    return int.from_bytes(tb, 'big')
+
+def encrypt(original_bytes):
+    dummy = random_key(len(original_bytes))
+    original_key = int.from_bytes(original_bytes, 'big')
+    encrypted = original_key ^ dummy
+    return dummy, encrypted
+
+def decrypt(key1, key2):
+    decrypted = key1 ^ key2
+    temp = decrypted.to_bytes((decrypted.bit_length() +7) // 8, 'big')
+    return temp.decode()
+
+with open((cpath + '/input_picture.jpg'), 'rb') as image:
+    f = image.read()
+    f_encrypted = encrypt(f)
+
+with open(cpath + '/decrypted_picture.jpg', 'wb') as image:
+    image.write(decrypt(*f_encrypted))
+
+
+#%%
