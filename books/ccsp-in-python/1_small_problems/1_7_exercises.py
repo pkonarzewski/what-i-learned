@@ -199,7 +199,7 @@ with open((cpath + '/input_picture.jpg'), 'rb') as image:
     f = image.read()
     f_encrypted = encrypt(f)
 
-with open((cpath + '/input_pictureAAA.jpg'), 'wb') as image:
+with open((cpath + '/input_picture_crypted.jpg'), 'wb') as image:
     image.write(f_encrypted[1].to_bytes((f_encrypted[1].bit_length() +7) // 8, 'big'))
 
 with open(cpath + '/decrypted_picture.jpg', 'wb') as image:
