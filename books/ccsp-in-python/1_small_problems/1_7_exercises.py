@@ -174,6 +174,7 @@ print(towers)
 """
 Use a one-time pad to encrypt and decrypt images.
 """
+
 import os
 from secrets import token_bytes
 
@@ -192,11 +193,14 @@ def encrypt(original_bytes):
 def decrypt(key1, key2):
     decrypted = key1 ^ key2
     temp = decrypted.to_bytes((decrypted.bit_length() +7) // 8, 'big')
-    return temp.decode()
+    return temp
 
 with open((cpath + '/input_picture.jpg'), 'rb') as image:
     f = image.read()
     f_encrypted = encrypt(f)
+
+with open((cpath + '/input_picture_crypted.jpg'), 'wb') as image:
+    image.write(f_encrypted[1].to_bytes((f_encrypted[1].bit_length() +7) // 8, 'big'))
 
 with open(cpath + '/decrypted_picture.jpg', 'wb') as image:
     image.write(decrypt(*f_encrypted))
