@@ -200,6 +200,3 @@ with open((cpath + '/input_picture.jpg'), 'rb') as image:
 
 with open(cpath + '/decrypted_picture.jpg', 'wb') as image:
     image.write(decrypt(*f_encrypted))
-
-
-#%%
