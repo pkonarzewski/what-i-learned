@@ -69,6 +69,3 @@ def fib6(n: int) -> Generator[int, None, None]:
 
 print(list(fib6(1)))
 print(list(fib6(50)))
-
-
-#%%

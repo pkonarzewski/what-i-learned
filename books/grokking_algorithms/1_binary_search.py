@@ -2,6 +2,7 @@
 Binnary search algorithm.
 Wyszukiwanie binarne.
 """
+#%%
 import math
 
 def binary_search(array, target):

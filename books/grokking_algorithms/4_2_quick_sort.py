@@ -2,7 +2,7 @@
 Quick Sort.
 Sortowanie szybkie.
 """
-
+#%%
 def qsort(arr):
     """Quick sort algorithm."""
     if len(arr) < 2:

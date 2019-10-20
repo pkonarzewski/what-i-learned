@@ -2,7 +2,7 @@
 Recursion.
 Rekurencja.
 """
-
+#%%
 def factorial(x):
     """Factorial of x."""
     if x == 1:
