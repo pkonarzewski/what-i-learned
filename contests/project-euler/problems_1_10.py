@@ -1,3 +1,4 @@
+
 #%% PROBLEM 1
 """
 PROBLEM 1
@@ -7,7 +8,6 @@ Find the sum of all the multiples of 3 or 5 below 1000.
 """
 
 # simple
-@profile
 def problem1_simple(n):
     result = 0
 
@@ -22,28 +22,26 @@ print(problem1_simple(1000))
 
 # functional approach
 assert sum([x for x in range(1,10) if x % 3 == 0 or x % 5 == 0]) == 23
+print(sum([x for x in range(1,10) if x % 3 == 0 or x % 5 == 0]))
 
 
-# trial division
-# def problem1_trial_division(n, x):
-#     target = n**(1/x)
-#     return target
+# using geometric/arithmetic aproach
+def problem1_alternative(n, p):
+    N = (p-1) // n
+    return n*(N*(N+1)//2)
 
+assert problem1_alternative(3, 10) + problem1_alternative(5, 10) - problem1_alternative(15, 10) == 23
+print(problem1_alternative(3, 1000) + problem1_alternative(5, 1000) - problem1_alternative(15, 1000))
 
-# print(problem1_trial_division(10))
-# assert problem1_trial_division(10) == 23
 
 # BENCHMARK
 bench_n = 100000
 print('simple')
 %timeit problem1_simple(bench_n)
-prrint('functional')
+print('functional')
 %timeit sum([x for x in range(1, bench_n) if x % 3 == 0 or x % 5 == 0])
-# print('trial_divison')
-# %timeit problem1_trial_division()
+print('alternative')
+%timeit problem1_alternative(3, bench_n) + problem1_alternative(5, bench_n) - problem1_alternative(15, bench_n)
+
 
 #%% PROBLEM 2
-import math
-
-
-#%%
