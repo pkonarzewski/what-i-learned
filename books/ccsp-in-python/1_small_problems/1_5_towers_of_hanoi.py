@@ -40,11 +40,23 @@ tower_c: Stack[int] = Stack()
 for i in range(1, num_discs+1):
     tower_a.push(i)
 
-print(tower_a, tower_b, tower_c)
+print('start >>', tower_a, tower_b, tower_c)
 
 hanoi(tower_a, tower_c, tower_b, num_discs)
 
-print('>>', tower_a, tower_b, tower_c)
+print('end >>', tower_a, tower_b, tower_c)
 
 
-#%%
+#%% Hanoi printer
+
+def tower(disk_numbers, source, auxilary, destination):
+    if disk_numbers == 1:
+        print(f"{source} -> {destination}: {disk_numbers}")
+        return
+    else:
+        tower(disk_numbers - 1, source, destination, auxilary)
+        print(f"{source} -> {destination}: {disk_numbers}")
+        tower(disk_numbers - 1, auxilary, source, destination)
+
+
+tower(3, 'source', 'aux', 'dest')
