@@ -1,9 +1,14 @@
 #%%
+import os
+import sys
 from enum import Enum
 from typing import List, NamedTuple, Callable, Optional
 import random
 from math import sqrt
-# from generic_search import dfs, bfs, node_to_path, Node
+
+root = os.path.dirname(__file__)
+sys.path.append(root)
+from generic_search import dfs, bfs, node_to_path, Node
 
 
 class Cell(str, Enum):
@@ -41,7 +46,7 @@ class Maze:
     def goal_test(self, ml: MazeLocation) -> bool:
         return ml == self.goal
 
-    def successors(self, ml: MazeLocation) -> List(MazeLocations):
+    def successors(self, ml: MazeLocation) -> List[MazeLocation]:
         locations: List[MazeLocation] = []
         if ml.row + 1 < self._rows and self._grid[ml.row + 1][ml.column] != Cell.BLOCKED:
             locations.append(MazeLocation(ml.row + 1, ml.column))

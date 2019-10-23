@@ -105,6 +105,9 @@ def node_to_path(node: Node[T]) -> List[T]:
     path.reverse()
     return path
 
+def bfs():
+    pass
+
 
 if __name__ == "__main__":
     print(linear_contains([1, 5, 15, 15, 15, 15, 20], 5)) # True
