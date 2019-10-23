@@ -15,6 +15,10 @@ class Stack(Generic[T]):
     def pop(self) -> T:
         return self._container.pop()
 
+    @property
+    def empty(self):
+        return len(self._container) == 0
+
     def __repr__(self) -> str:
         return repr(self._container)
 
