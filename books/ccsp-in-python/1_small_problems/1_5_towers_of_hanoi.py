@@ -3,7 +3,7 @@
 from typing import TypeVar, Generic, List
 T = TypeVar('T')
 
-#%%
+
 class Stack(Generic[T]):
 
     def __init__(self) -> None:
@@ -32,7 +32,7 @@ def hanoi(begin: Stack[int], end: Stack[int], temp: Stack[int], n: int) -> None:
         hanoi(temp, end, begin, n-1)
 
 
-num_discs: int = 4
+num_discs: int = 3
 tower_a: Stack[int] = Stack()
 tower_b: Stack[int] = Stack()
 tower_c: Stack[int] = Stack()
