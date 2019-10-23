@@ -4,7 +4,7 @@ from collections.abc import Set, Sequence
 from casino_simulator.exceptions import InvalidBet
 
 
-class RouletteGame(object):
+class RouletteGame:
     """Definicja podstawowych zasad gry."""
     def __init__(self):
         # BETS OUTCOME
@@ -34,7 +34,7 @@ class RouletteGame(object):
         ]
 
 
-class Outcome(object):
+class Outcome:
     """
     Zawiera Wygrana, na ktora moze być postawiony zaklad.
 
@@ -183,7 +183,7 @@ class Wheel(Sequence):
         return [oc for oc in self.all_outcomes if oc.name.lower() == name.lower()][0]
 
 
-class BinBuilder(object):
+class BinBuilder:
     """
     BinBuilder buduje Ruletka z Bins ze wszystkimi Outcomes.
 
@@ -308,7 +308,7 @@ class BinBuilder(object):
         wheel.add_outcome(37, Outcome(bet_name, self.game.five_bet_odds))
 
 
-class Bet(object):
+class Bet:
     """
     Zaklad powiazuje Wygrana z kwota obstawiana jak i rowniez Gracza.
 
@@ -332,7 +332,7 @@ class Bet(object):
         return '{0} on {1}'.format(self.amount, self.outcome)
 
 
-class Table(object):
+class Table:
     """Stol zawiera wszystkie Zaklady umieszczone przez Gracza.
 
     Stol dba o limity, zaklada tylko jednego gracza.
@@ -363,7 +363,7 @@ class Table(object):
         return ', '.join(map(str, self.bets))
 
 
-class Game(object):
+class Game:
     """Klasa reprezentuje gre w ruletke."""
     def __init__(self, wheel, table):
         self. wheel = wheel
@@ -387,7 +387,7 @@ class Game(object):
                 player.lose(bet)
 
 
-class Player(object):
+class Player:
     """Bazowa klasa gracza.
 
     stake: aktualny stos gracza z jakim zaczyna

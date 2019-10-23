@@ -1,9 +1,10 @@
+#%% quick sort
 """
 Quick Sort.
 Sortowanie szybkie.
 """
-#%%
-def qsort(arr):
+
+def quicksort(arr):
     """Quick sort algorithm."""
     if len(arr) < 2:
         return arr
@@ -14,11 +15,11 @@ def qsort(arr):
 
         for x in arr[1:]:
             if x >= pivot:
-                greater += [x]
+                greater.append(x)
             else:
-                lesser += [x]
+                lesser.append(x)
 
-        return qsort(lesser) + [pivot] + qsort(greater)
+        return quicksort(lesser) + [pivot] + quicksort(greater)
 
 
-assert qsort([9, 5, 2, 3, 6, 1, 2]) == [1, 2, 2, 3, 5, 6, 9]
+assert quicksort([9, 5, 2, 3, 6, 1, 2]) == [1, 2, 2, 3, 5, 6, 9]

@@ -38,7 +38,7 @@ def maxx(arr):
 assert maxx([10, 5, 2, 7, 1]) == 10
 
 
-#%% Binary search (recurrence case)
+#%% Binary search (recurrency)
 def binary_search(arr, p, r, target):
     if p == r:
         if arr[p] == target:
