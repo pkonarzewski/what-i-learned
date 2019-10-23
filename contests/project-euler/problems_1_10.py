@@ -56,21 +56,16 @@ find the sum of the even-valued terms.
 def fib_even(n):
     a, b = 1, 1
     fib_sum = 0
-    while b < n:
+    while True:
         a, b = b, a + b  # variable swaping
-        if b % 2 == 0:
+        if b > n:
+            break
+        elif b % 2 == 0:
             fib_sum += b
     return fib_sum
 
 
 assert fib_even(4000000) == 4613732
-
-def fib_even_recursive(n):
-    """
-    # Ciąg fibonacci'ego zawiera ciekawa wlasciwosc ze co 3 element jest parzysty
-    # E(n)=4*E(n-1)+E(n-2)
-    """
-    pass
 
 
 def fib_golden_ratio(n):
@@ -85,7 +80,35 @@ def fib_golden_ratio(n):
     2,8,34,.. multiplying by 4.236068 each time: 144,610,
     2584,10946,46368,196418 & 832040
     """
-    pass
+    a = 2
+    sum = 2
+    phi = 4.236068
+
+    while True:
+        a = round(a*phi)
+        if a < n:
+            sum += a
+        else:
+            break
+    return sum
+
+assert fib_golden_ratio(4000000) == 4613732
 
 
-#%%
+# BENCHMARK
+print('simple O(n)')
+%timeit fib_even(1000000)
+print('golden ratio O(n)')
+%timeit fib_golden_ratio(1000000)
+
+
+#%% PROBLEM 3
+"""
+The prime factors of 13195 are 5, 7, 13 and 29.
+What is the largest prime factor of the number 600851475143 ?
+"""
+
+def largest_factorial(n):
+    return n
+
+print(largest_factorial(600851475143))
