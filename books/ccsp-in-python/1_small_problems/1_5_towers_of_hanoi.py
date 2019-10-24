@@ -17,7 +17,7 @@ class Stack(Generic[T]):
 
     @property
     def empty(self):
-        return len(self._container) == 0
+        return not self._container
 
     def __repr__(self) -> str:
         return repr(self._container)
