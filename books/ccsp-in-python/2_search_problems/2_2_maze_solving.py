@@ -76,7 +76,7 @@ class Maze:
             output += ''.join([c.value for c in row]) + '\n'
         return output
 
-#%%
+#%% DFS
 m: Maze = Maze()
 print(m)
 solution1: Optional[Node[MazeLocation]] = dfs(m.start, m.goal_test, m.successors)
@@ -89,3 +89,16 @@ else:
     m.clear(path1)
 
 #%% BFS
+m: Maze = Maze()
+print(m)
+solution2: Optional[Node[MazeLocation]] = bfs(m.start, m.goal_test, m.successors)
+if solution2 is None:
+    print('No solution found using depth-first search')
+else:
+    path1: List[MazeLocation] = node_to_path(solution2)
+    m.mark(path1)
+    print(m)
+    m.clear(path1)
+
+
+# %%
