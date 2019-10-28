@@ -1,4 +1,3 @@
-#%%
 from __future__ import annotations
 from typing import TypeVar, Iterable, Sequence, Generic, List, Callable, Set, Deque, Dict, Any, Optional
 from typing_extensions import Protocol
@@ -91,10 +90,9 @@ def dfs(initial: T, goal_test: Callable[[T], bool], successors: Callable[[T], Li
         if goal_test(current_state):
             return current_node
         for child in successors(current_state):
-            if child is explored:
-                continue
-            explored.add(child)
-            frontier.push(Node(child, current_node))
+            if child not in explored:
+                explored.add(child)
+                frontier.push(Node(child, current_node))
     return None
 
 def node_to_path(node: Node[T]) -> List[T]:
@@ -113,4 +111,3 @@ if __name__ == "__main__":
     print(linear_contains([1, 5, 15, 15, 15, 15, 20], 5)) # True
     print(binary_contains(["a", "d", "e", "f", "z"], "f")) # True
     print(binary_contains(["john", "mark", "ronald", "sarah"], "sheila")) #
-    False

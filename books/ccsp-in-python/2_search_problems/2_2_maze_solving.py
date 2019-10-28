@@ -50,12 +50,13 @@ class Maze:
         locations: List[MazeLocation] = []
         if ml.row + 1 < self._rows and self._grid[ml.row + 1][ml.column] != Cell.BLOCKED:
             locations.append(MazeLocation(ml.row + 1, ml.column))
-        if ml.row - 1 < self._rows and self._grid[ml.row - 1][ml.column] != Cell.BLOCKED:
+        if ml.row - 1 >= 0 and self._grid[ml.row - 1][ml.column] != Cell.BLOCKED:
             locations.append(MazeLocation(ml.row - 1, ml.column))
         if ml.column + 1 < self._rows and self._grid[ml.row][ml.column + 1] != Cell.BLOCKED:
             locations.append(MazeLocation(ml.row, ml.column + 1))
-        if ml.column - 1 < self._rows and self._grid[ml.row][ml.column - 1] != Cell.BLOCKED:
+        if ml.column - 1 >= 0 and self._grid[ml.row][ml.column - 1] != Cell.BLOCKED:
             locations.append(MazeLocation(ml.row, ml.column - 1))
+        return locations
 
     def mark(self, path: List[MazeLocation]):
         for maze_location in path:
@@ -83,11 +84,8 @@ if solution1 is None:
     print('No solution found using depth-first search')
 else:
     path1: List[MazeLocation] = node_to_path(solution1)
-    print(path1)
+    m.mark(path1)
     print(m)
     m.clear(path1)
 
-#%% DFS
-
-
-#%%
+#%% BFS
