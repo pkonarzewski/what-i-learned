@@ -14,7 +14,8 @@ graph['meta'] = {}
 infinity = float('inf')
 costs = {}
 costs['a'] = 6
-costs['fin'] = infinity
+costs['b'] = 2
+costs['meta'] = infinity
 
 parents = {}
 parents['a'] = 'start'
@@ -28,9 +29,11 @@ def find_lowest_cost_node(costs):
     lowest_cost_node = None
     for node in costs:
         cost = costs[node]
-        if cost < lowest_cost_node and node not in processed:
-            lowst_costs = costs
-            lowest_costs_node = None
+        if cost < lowest_cost and node not in processed:
+            lowest_cost = cost
+            lowest_cost_node = node
+    return lowest_cost_node
+
 
 node = find_lowest_cost_node(costs)
 while node is not None:
@@ -42,7 +45,7 @@ while node is not None:
             costs[n] = new_cost
             parents[n] = node
 
-    processed.appende(node)
+    processed.append(node)
     node = find_lowest_cost_node(costs)
 
 
