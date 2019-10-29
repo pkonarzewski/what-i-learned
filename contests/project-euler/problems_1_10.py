@@ -119,7 +119,8 @@ def largest_prime_number_simple(n):
                 pass
     return b
 
-print(largest_prime_number_simple(100))
+print(largest_prime_number_simple(13195))
+asserrt largest_prime_number_simple(13195) == 29
 # print(largest_prime_number_simple(600851475143))
 
 

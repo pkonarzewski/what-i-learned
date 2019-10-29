@@ -100,5 +100,4 @@ else:
     print(m)
     m.clear(path1)
 
-
-# %%
+# %% A*
