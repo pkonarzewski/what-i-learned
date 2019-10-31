@@ -6,7 +6,8 @@ T = TypeVar('T')
 
 class Stack(Generic[T]):
 
-    def __init__(self) -> None:
+    def __init__(self, name) -> None:
+        self.name = name
         self._container: List[T] = []
 
     def push(self, item: T) -> None:
@@ -25,6 +26,7 @@ class Stack(Generic[T]):
 
 def hanoi(begin: Stack[int], end: Stack[int], temp: Stack[int], n: int) -> None:
     if n == 1:
+        print(f'{begin.name} > {end.name}')
         end.push(begin.pop())
     else:
         hanoi(begin, temp, end, n-1)
@@ -33,9 +35,9 @@ def hanoi(begin: Stack[int], end: Stack[int], temp: Stack[int], n: int) -> None:
 
 
 num_discs: int = 3
-tower_a: Stack[int] = Stack()
-tower_b: Stack[int] = Stack()
-tower_c: Stack[int] = Stack()
+tower_a: Stack[int] = Stack(name='A')
+tower_b: Stack[int] = Stack(name='B')
+tower_c: Stack[int] = Stack(name='C')
 
 for i in range(1, num_discs+1):
     tower_a.push(i)
