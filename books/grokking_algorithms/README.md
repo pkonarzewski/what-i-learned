@@ -1,3 +1,1 @@
-# Grokking Algorithms
-
-Aditya Bhargava
+# Grokking Algorithms - Aditya Bhargava

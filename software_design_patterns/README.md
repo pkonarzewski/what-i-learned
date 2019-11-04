@@ -1,4 +1,4 @@
-## Wzorce projektowe
+# Wzorce projektowe
 
 ## Lista
 

@@ -1,2 +1,1 @@
-# Classic Computer Science Problems in Python
-DAVID KOPEC
+# Classic Computer Science Problems in Python - David Kopec
