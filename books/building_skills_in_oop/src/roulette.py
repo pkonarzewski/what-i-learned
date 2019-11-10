@@ -1,7 +1,7 @@
 """Symulator gry w ruletke."""
 import random
 from collections.abc import Set, Sequence
-from casino_simulator.exceptions import InvalidBet
+from src.exceptions import InvalidBet
 
 
 class RouletteGame:

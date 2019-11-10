@@ -1,7 +1,8 @@
+import pytest
 import unittest
-from casino_simulator.roulette import Outcome, Bin, Wheel, BinBuilder, Bet, NonRandom, Table, Game
-from casino_simulator.roulette import Player, Passenger57, Martingale
-from casino_simulator.exceptions import InvalidBet
+from src.roulette import Outcome, Bin, Wheel, BinBuilder, Bet, NonRandom, Table, Game
+from src.roulette import Player, Passenger57, Martingale
+from src.exceptions import InvalidBet
 
 
 # OUTCOME ============================================================

@@ -3,3 +3,4 @@ mypy
 black
 sphinx
 tox
+pytest

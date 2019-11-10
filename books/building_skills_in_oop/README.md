@@ -1,3 +1,3 @@
 # Building Skills in Object-Oriented Design - Steven F. Lott
 
-[online book link](http://www.itmaybeahack.com/homepage/books/oodesign.html)
+[online book link](https://slott56.github.io/building-skills-oo-design-book/build/html/index.html)
