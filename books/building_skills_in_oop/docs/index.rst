@@ -1,7 +1,7 @@
 Welcome to Casino OOP's documentation!
 ======================================
 
-.. automodule:: src.main
+.. automodule:: src.roulette
     :members:
 
 .. toctree::
