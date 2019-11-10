@@ -1,7 +1,7 @@
 """Symulator gry w ruletke."""
 import random
 from collections.abc import Set, Sequence
-from src.exceptions import InvalidBet
+from old.exceptions import InvalidBet
 
 
 class RouletteGame:
@@ -421,7 +421,7 @@ class Passenger57(Player):
 
     def __init__(self, table):
         self.table = table
-        super(Passenger57).__init__(self)
+        super().__init__(self)
 
     def playing(self):
         return True
@@ -439,7 +439,7 @@ class Martingale(Player):
         self.loss_count = 1
         self.bet_multiple = 2^self.loss_count
 
-        super(Martingale).__init__(self)
+        super().__init__(self)
 
     def playing(self):
         return True

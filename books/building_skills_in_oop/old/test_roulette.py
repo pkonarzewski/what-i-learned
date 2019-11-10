@@ -1,8 +1,9 @@
 import pytest
 import unittest
-from src.roulette import Outcome, Bin, Wheel, BinBuilder, Bet, NonRandom, Table, Game
-from src.roulette import Player, Passenger57, Martingale
-from src.exceptions import InvalidBet
+
+from old.roulette import Outcome, Bin, Wheel, BinBuilder, Bet, NonRandom, Table, Game
+from old.roulette import Player, Passenger57, Martingale
+from old.exceptions import InvalidBet
 
 
 # OUTCOME ============================================================
@@ -282,62 +283,62 @@ class TestTable(unittest.TestCase):
 
 
 # GAME ================================================================
-class TestGame(unittest.TestCase):
-    def setUp(self):
-        self.wheel = Wheel()
-        binb = BinBuilder()
-        binb.build_bins(self.wheel)
+# class TestGame(unittest.TestCase):
+#     def setUp(self):
+#         self.wheel = Wheel()
+#         binb = BinBuilder()
+#         binb.build_bins(self.wheel)
 
-        self.table = Table(limit=100)
+#         self.table = Table(limit=100)
 
-        self.player = Passenger57(self.table)
+#         self.player = Passenger57(self.table)
 
-    def test_game_init(self):
-        game = Game(wheel=self.wheel, table=self.table)
+#     def test_game_init(self):
+#         game = Game(wheel=self.wheel, table=self.table)
 
-    def test_game_cycle(self):
-        game = Game(wheel=self.wheel, table=self.table)
+#     def test_game_cycle(self):
+#         game = Game(wheel=self.wheel, table=self.table)
 
-        for _ in range(5):
-            game.cycle(self.player)
+#         for _ in range(5):
+#             game.cycle(self.player)
 
 
 # PLAYERS =============================================================
-class TestPassenger57(unittest.TestCase):
-    def setUp(self):
-        self.wheel = Wheel()
-        BinBuilder().build_bins(self.wheel)
-        self.table = Table(limit=100)
+# class TestPassenger57(unittest.TestCase):
+#     def setUp(self):
+#         self.wheel = Wheel()
+#         BinBuilder().build_bins(self.wheel)
+#         self.table = Table(limit=100)
 
-        self.b_bet = Bet(1, self.wheel.get_outcome('Black'))
+#         self.b_bet = Bet(1, self.wheel.get_outcome('Black'))
 
-        self.player = Passenger57(table=self.table)
+#         self.player = Passenger57(table=self.table)
 
-    def test_init_player(self):
-        self.assertEqual(self.player.black, self.b_bet.outcome)
+#     def test_init_player(self):
+#         self.assertEqual(self.player.black, self.b_bet.outcome)
 
-    def test_palce_bet(self):
-        self.player.place_bets()
+#     def test_palce_bet(self):
+#         self.player.place_bets()
 
-        assert len(self.table.bets) == 1
-        assert self.table.bets[0].amount == 1
-        self.assertEqual(self.table.bets[0].outcome, self.b_bet.outcome)
+#         assert len(self.table.bets) == 1
+#         assert self.table.bets[0].amount == 1
+#         self.assertEqual(self.table.bets[0].outcome, self.b_bet.outcome)
 
-    def test_win(self):
-        self.assertEqual(self.player.win(self.b_bet), 2)
+#     def test_win(self):
+#         self.assertEqual(self.player.win(self.b_bet), 2)
 
-    def test_lose(self):
-        self.assertEqual(self.player.lose(self.b_bet), 1)
+#     def test_lose(self):
+#         self.assertEqual(self.player.lose(self.b_bet), 1)
 
 
-class TestMartingale(unittest.TestCase):
-    def setUp(self):
-        self.wheel = Wheel(rng=NonRandom())
-        BinBuilder().build_bins(self.wheel)
-        self.table = Table(limit=1000)
+# class TestMartingale(unittest.TestCase):
+#     def setUp(self):
+#         self.wheel = Wheel(rng=NonRandom())
+#         BinBuilder().build_bins(self.wheel)
+#         self.table = Table(limit=1000)
 
-    def test_init_player(self):
-        self.player = Martingale(table=self.table)
+#     def test_init_player(self):
+#         self.player = Martingale(table=self.table)
 
-    def test_place_bet(self):
-        pass
+#     def test_place_bet(self):
+#         pass
