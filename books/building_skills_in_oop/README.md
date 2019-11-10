@@ -6,4 +6,6 @@
 
 ### Roulette (american version)
 
+[Rules and bets explanation](https://www.roulette17.com/layout/)
+
 ![ruletka](./misc/roulette.png)

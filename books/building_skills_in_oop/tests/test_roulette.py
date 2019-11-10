@@ -1,5 +1,5 @@
 import pytest
-from src.roulette import Outcome, Bin, Wheel
+from src.roulette import Outcome, Bin, Wheel, BinBuilder
 
 
 def test_outcome():
@@ -43,3 +43,79 @@ def test_wheel():
     assert o1 in wheel.get(8)
     wheel.rng.seed(1)
     assert o1 in wheel.choose()
+
+
+def test_bin_builder_full():
+    wheel = Wheel()
+    bb = BinBuilder()
+    bb.build_bins(wheel)
+
+
+def test_bin_builder_bets():
+    wheel = Wheel()
+    bb = BinBuilder()
+
+    # straight bet
+    bb.add_straight_bets(wheel)
+    assert Outcome("0", 35) in wheel.get(0)
+    assert Outcome("00", 35) in wheel.get(37)
+    assert Outcome("1", 35) in wheel.get(1)
+    assert Outcome("36", 35) in wheel.get(36)
+
+    # split bets
+    bb.add_split_bets(wheel)
+    assert Outcome("Split 1-2", 17) in wheel.get(1)
+    assert Outcome("Split 1-4", 17) in wheel.get(1)
+
+    # street
+    bb.add_street_bets(wheel)
+    assert Outcome("Street 1-2-3", 11) in wheel.get(1)
+    assert Outcome("Street 34-35-36", 11) in wheel.get(36)
+
+    # corner
+    bb.add_corner_bets(wheel)
+    oc1 = Outcome("Corner 1-2-4-5", 8)
+    oc2 = Outcome("Corner 4-5-7-8", 8)
+    oc3 = Outcome("Corner 2-3-5-6", 8)
+    oc4 = Outcome("Corner 5-6-8-9", 8)
+    assert oc1 in wheel.get(1)
+    assert oc1 and oc2 in wheel.get(4)
+
+    assert oc1 and oc2 and oc3 and oc4 in wheel.get(5)
+
+    # line
+    bb.add_line_bets(wheel)
+    oc1 = Outcome("Line 1-2-3-4-5-6", 5)
+    oc2 = Outcome("Line 4-5-6-7-8-9", 5)
+    assert oc1 in wheel.get(1)
+    assert oc1 and oc2 in wheel.get(4)
+
+    # dozen
+    bb.add_dozen_bets(wheel)
+    assert Outcome("Dozen 1-12", 2) in wheel.get(1)
+    assert Outcome("Dozen 13-24", 2) in wheel.get(17)
+    assert Outcome("Dozen 25-36", 2) in wheel.get(36)
+
+    # column
+    bb.add_column_bets(wheel)
+    assert Outcome("Column 1", 2) in wheel.get(1)
+    assert Outcome("Column 2", 2) in wheel.get(17)
+    assert Outcome("Column 3", 2) in wheel.get(36)
+
+    # even money
+    bb.add_even_money_bets(wheel)
+    oc_low = Outcome("Low", 1)
+    oc_high = Outcome("High", 1)
+    oc_red = Outcome("Red", 1)
+    oc_black = Outcome("Black", 1)
+    oc_even = Outcome("Even", 1)
+    oc_odd = Outcome("Odd", 1)
+    assert oc_low and oc_red and oc_odd in wheel.get(1)
+    assert oc_high and oc_black and oc_odd in wheel.get(17)
+    assert oc_high and oc_red and oc_even in wheel.get(36)
+
+    # five
+    bb.add_five_bet(wheel)
+    oc = Outcome('00-0-1-2-3', 6)
+    assert oc in wheel.get(0)
+    assert oc in wheel.get(37)
