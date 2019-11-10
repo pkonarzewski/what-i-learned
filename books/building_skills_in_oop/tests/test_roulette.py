@@ -1,5 +1,5 @@
 import pytest
-from src.roulette import Outcome, Bin, Wheel, BinBuilder
+from src.roulette import Outcome, Bin, Wheel, BinBuilder, Bet
 
 
 def test_outcome():
@@ -43,6 +43,9 @@ def test_wheel():
     assert o1 in wheel.get(8)
     wheel.rng.seed(1)
     assert o1 in wheel.choose()
+
+    assert o1 == wheel.get_outcome("Red")
+    assert o2 == wheel.get_outcome("Black")
 
 
 def test_bin_builder_full():
@@ -116,6 +119,16 @@ def test_bin_builder_bets():
 
     # five
     bb.add_five_bet(wheel)
-    oc = Outcome('00-0-1-2-3', 6)
+    oc = Outcome("00-0-1-2-3", 6)
     assert oc in wheel.get(0)
     assert oc in wheel.get(37)
+
+
+def test_bet():
+    b1 = Bet(10, Outcome("Test1", 12))
+    assert b1.win_amount() == 130
+    assert b1.lose_amount() == 10
+    b2 = Bet(5, Outcome("Test2", 1))
+    assert b2.win_amount() == 10
+    assert b2.lose_amount() == 5
+    assert str(b2) == "Bet (amount=5, outcome=Test2 (1:1))"

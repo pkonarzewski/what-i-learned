@@ -76,10 +76,12 @@ class Wheel:
     def __init__(self):
         self.bins = list(Bin() for _ in range(38))
         self.rng = random.Random()
+        self.outcomes = {}
 
     def add_outcome(self, number: int, outcome: Outcome) -> None:
         """Adds the given Outcome object to the Bin instance with the given number."""
         self.bins[number].add(outcome)
+        self.outcomes[outcome.name] = outcome
 
     def choose(self) -> Bin:
         """Generates a random number between 0 and 37, and returns the randomly
@@ -90,6 +92,9 @@ class Wheel:
     def get(self, bin: int) -> Bin:
         """Returns the given Bin instance from the internal collection."""
         return self.bins[bin]
+
+    def get_outcome(self, name: str) -> Outcome:
+        return self.outcomes[name]
 
 
 class BinBuilder:
@@ -208,3 +213,22 @@ class BinBuilder:
 
         # 00
         wheel.add_outcome(37, Outcome(bet_name, Odds.FIVE))
+
+
+@dataclass
+class Bet:
+    """Bet associates an amount and an Outcome. In a future round of design,
+    we can also associate a Bet with a Player."""
+
+    amount: int
+    outcome: Outcome
+
+    def win_amount(self) -> int:
+        """Uses the Outcome’s winAmount to compute the amount won, given the amount of this bet"""
+        return self.amount + self.amount * self.outcome.odds
+
+    def lose_amount(self) -> int:
+        return self.amount
+
+    def __str__(self) -> str:
+        return f"Bet (amount={self.amount!r}, outcome={self.outcome!s})"
