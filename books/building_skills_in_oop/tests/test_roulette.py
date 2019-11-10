@@ -1,5 +1,5 @@
 import pytest
-from src.roulette import Outcome, Bin
+from src.roulette import Outcome, Bin, Wheel
 
 
 def test_outcome():
@@ -30,3 +30,16 @@ def test_bin():
 
     assert o1 in b1
     assert o2 not in b2
+
+
+def test_wheel():
+    o1 = Outcome("Red", 1)
+    o2 = Outcome("Black", 2)
+
+    wheel = Wheel()
+    wheel.add_outcome(8, o1)
+    wheel.add_outcome(9, o2)
+
+    assert o1 in wheel.get(8)
+    wheel.rng.seed(1)
+    assert o1 in wheel.choose()
