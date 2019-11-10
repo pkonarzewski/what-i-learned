@@ -27,3 +27,11 @@ class Outcome:
 
     def __repr__(self):
         return f"Outcome(name={self.name!r}, odds={self.odds!r})"
+
+
+class Bin(frozenset):
+    """Bin contains a collection of Outcome instances which reflect the winning
+    bets that are paid for a particular bin on a Roulette wheel.
+    In Roulette, each spin of the wheel has a number of Outcome instances.
+
+    """
