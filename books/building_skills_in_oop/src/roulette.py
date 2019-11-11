@@ -233,6 +233,7 @@ class Bet:
         return self.amount + self.amount * self.outcome.odds
 
     def lose_amount(self) -> int:
+        """Returns the amount bet as the amount lost. This is the cost of placing the bet."""
         return self.amount
 
     def __str__(self) -> str:
@@ -240,6 +241,11 @@ class Bet:
 
 
 class Table:
+    """Table contains all the Bet instances created by a Player object.
+    A table also has a betting limit, and the sum of all of a player’s bets
+    must be less than or equal to this limit. We assume a single Player object
+    in the simulation.
+    """
 
     limit: int
     minimum: int
@@ -248,9 +254,12 @@ class Table:
         self.bets: List[Bet] = [*bets] if bets is not None else []
 
     def place_bet(self, bet: Bet) -> None:
+        """Adds this bet to the list of working bets."""
         self.bets.append(bet)
+        self.is_valid()
 
     def is_valid(self):
+        """If there’s a problem an InvalidBet exception is raised."""
         if (
             sum([b.amount for b in self.bets]) > self.limit
             or min([b.amount for b in self.bets]) < self.minimum
@@ -258,6 +267,8 @@ class Table:
             raise InvalidBet("Invalid Bet")
 
     def __iter__(self) -> Iterator[Bet]:
+        """Returns an iterator over the available list of Bet instances.
+        This simply returns the iterator over the list of Bet objects."""
         return iter(self.bets)
 
     def __str__(self) -> str:
@@ -265,3 +276,59 @@ class Table:
 
     def __repr__(self) -> str:
         return f"Table({', '.join([repr(b) for b in self.bets])})"
+
+
+class Player:
+    def place_bets(self) -> None:
+        pass
+
+    def win(self, bet: Bet) -> None:
+        pass
+
+    def lose(self, bet: Bet) -> None:
+        pass
+
+
+class Passenger57(Player):
+    """Passenger57 constructs a Bet instance based on the Outcome object named "Black".
+    This is a very persistent player."""
+
+    def __init__(self, table: Table, wheel: Wheel) -> None:
+        self.table = table
+        self.wheel = wheel
+        self.black = wheel.get_outcome("Black")
+
+    def place_bets(self) -> None:
+        """Updates the Table object with the various bets.
+        This version creates a Bet instance from the “Black” Outcome instance.
+        """
+        self.table.place_bet(Bet(1, self.black))
+
+    def win(self, bet: Bet) -> None:
+        """Notification from the Game object that the Bet instance was a winner."""
+        bet.win_amount()
+
+    def lose(self, bet: Bet) -> None:
+        """Notification from the Game object that the Bet instance was a loser."""
+        bet.lose_amount()
+
+
+@dataclass
+class Game:
+    """Game manages the sequence of actions that defines the game of Roulette.
+    This includes notifying the Player object to place bets, spinning the Wheel
+    object and resolving the Bet instances actually present on the Table object.
+    """
+
+    wheel: Wheel
+    table: Table
+
+    def cycle(self, player: Player) -> None:
+        """This will execute a single cycle of play with a given Player."""
+        player.place_bets()
+        winning_bin = self.wheel.choose()
+        for bet in self.table:
+            if bet.outcome in winning_bin:
+                player.win(bet)
+            else:
+                player.lose(bet)
