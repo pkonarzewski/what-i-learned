@@ -4,6 +4,7 @@ Roulette game simulator.
 from dataclasses import dataclass
 import random
 from enum import Enum
+from typing import Iterator, List, Sequence
 
 
 class Odds(int, Enum):
@@ -32,6 +33,10 @@ TABLE_LAYOUT = (
     (31, 32, 33),
     (34, 35, 36),
 )
+
+
+class InvalidBet(Exception):
+    pass
 
 
 @dataclass(frozen=True)
@@ -231,4 +236,32 @@ class Bet:
         return self.amount
 
     def __str__(self) -> str:
-        return f"Bet (amount={self.amount!r}, outcome={self.outcome!s})"
+        return f"Bet(amount={self.amount!r}, outcome={self.outcome!s})"
+
+
+class Table:
+
+    limit: int
+    minimum: int
+
+    def __init__(self, *bets: Bet) -> None:
+        self.bets: List[Bet] = [*bets] if bets is not None else []
+
+    def place_bet(self, bet: Bet) -> None:
+        self.bets.append(bet)
+
+    def is_valid(self):
+        if (
+            sum([b.amount for b in self.bets]) > self.limit
+            or min([b.amount for b in self.bets]) < self.minimum
+        ):
+            raise InvalidBet("Invalid Bet")
+
+    def __iter__(self) -> Iterator[Bet]:
+        return iter(self.bets)
+
+    def __str__(self) -> str:
+        return f"Table(bets amount={sum([b.amount for b in self.bets])!s})"
+
+    def __repr__(self) -> str:
+        return f"Table({', '.join([repr(b) for b in self.bets])})"

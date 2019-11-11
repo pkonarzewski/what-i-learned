@@ -1,5 +1,5 @@
 import pytest
-from src.roulette import Outcome, Bin, Wheel, BinBuilder, Bet
+from src.roulette import Outcome, Bin, Wheel, BinBuilder, Bet, InvalidBet, Table
 
 
 def test_outcome():
@@ -132,3 +132,34 @@ def test_bet():
     assert b2.win_amount() == 10
     assert b2.lose_amount() == 5
     assert str(b2) == "Bet (amount=5, outcome=Test2 (1:1))"
+
+
+def test_invalidbet_exception():
+    with pytest.raises(InvalidBet):
+        raise InvalidBet("TEST")
+
+
+def test_table():
+    o1 = Outcome("Red", 1)
+
+    table = Table(Bet(10, o1), Bet(200, o1))
+    table.limit = 300
+    table.minimum = 10
+    assert str(table) == "Table(bets amount=210)"
+    assert (
+        repr(table)
+        == "Table(Bet(amount=10, outcome=Outcome(name='Red', odds=1)), Bet(amount=200, outcome=Outcome(name='Red', odds=1)))"
+    )
+
+    with pytest.raises(InvalidBet):
+        table.bets = []
+        table.place_bet(Bet(1000, o1))
+        table.is_valid()
+
+    with pytest.raises(InvalidBet):
+        table.bets = []
+        table.place_bet(Bet(3, o1))
+        table.is_valid()
+
+    for b in table:
+        assert isinstance(b, Bet)
