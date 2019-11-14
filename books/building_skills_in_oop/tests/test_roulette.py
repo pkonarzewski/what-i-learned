@@ -1,4 +1,5 @@
 import pytest
+from unittest.mock import Mock
 from src.roulette import (
     Outcome,
     Bin,
@@ -43,19 +44,16 @@ def test_bin():
 
 
 def test_wheel():
-    o1 = Outcome("Red", 1)
-    o2 = Outcome("Black", 2)
+    mock_rng = Mock(choice=Mock(return_value="bin1"))
 
+    bins = ["bin1", "bin2"]
     wheel = Wheel()
-    wheel.add_outcome(8, o1)
-    wheel.add_outcome(9, o2)
+    wheel.bins = bins
+    wheel.rng = mock_rng
 
-    assert o1 in wheel.get(8)
-    wheel.rng.seed(1)
-    assert o1 in wheel.choose()
-
-    assert o1 == wheel.get_outcome("Red")
-    assert o2 == wheel.get_outcome("Black")
+    value = wheel.choose()
+    assert value == "bin1"
+    mock_rng.choice.assert_called_with(bins)
 
 
 def test_bin_builder_full():
