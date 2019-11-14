@@ -279,38 +279,79 @@ class Table:
 
 
 class Player:
-    def place_bets(self) -> None:
-        pass
-
-    def win(self, bet: Bet) -> None:
-        pass
-
-    def lose(self, bet: Bet) -> None:
-        pass
-
-
-class Passenger57(Player):
-    """Passenger57 constructs a Bet instance based on the Outcome object named "Black".
-    This is a very persistent player."""
+    """Player places bets in Roulette. This an abstract class, with no actual
+    body for the Player.placeBets() method. However, this class does implement
+    the basic Player.win() method used by all subclasses.
+    """
 
     def __init__(self, table: Table, wheel: Wheel) -> None:
-        self.table = table
-        self.wheel = wheel
-        self.black = wheel.get_outcome("Black")
+        self.table: Table = table
+        self.stake: int = -1
+        self.rounds_to_go: int = -1
+
+    def playing(self) -> bool:
+        raise NotImplementedError()
 
     def place_bets(self) -> None:
         """Updates the Table object with the various bets.
         This version creates a Bet instance from the “Black” Outcome instance.
         """
-        self.table.place_bet(Bet(1, self.black))
+        raise NotImplementedError()
 
     def win(self, bet: Bet) -> None:
         """Notification from the Game object that the Bet instance was a winner."""
-        bet.win_amount()
+        pass
 
     def lose(self, bet: Bet) -> None:
         """Notification from the Game object that the Bet instance was a loser."""
-        bet.lose_amount()
+        pass
+
+
+class Passenger57(Player):
+    """Passenger57 constructs a Bet instance based on the Outcome object named
+    "Black". This is a very persistent player."""
+
+    def __init__(self, table: Table, wheel: Wheel) -> None:
+        self.table = table
+        self.black = wheel.get_outcome("Black")
+
+    def playing(self) -> bool:
+        return True
+
+    def place_bets(self) -> None:
+        self.table.place_bet(Bet(1, self.black))
+
+
+class Martingale(Player):
+    """Martingale is a Player who places bets in Roulette. This player doubles
+    their bet on every loss and resets their bet to a base amount on each win.
+    """
+
+    def __init__(self, table: Table, wheel: Wheel):
+        self.table = table
+        self.loss_count = 0
+        self.black = wheel.get_outcome("Black")
+
+    @property
+    def bet_multiple(self):
+        return 2 ** self.loss_count
+
+    def playing(self) -> bool:
+        if self.bet_multiple <= self.table.limit and self.stake >= self.bet_multiple:
+            return True
+        else:
+            return False
+
+    def place_bets(self) -> None:
+        self.table.place_bet(Bet(self.bet_multiple, self.black))
+        self.stake -= self.bet_multiple
+
+    def win(self, bet: Bet) -> None:
+        self.stake += bet.amount + bet.win_amount()
+        self.loss_count = 0
+
+    def lose(self, bet: Bet) -> None:
+        self.loss_count += 1
 
 
 @dataclass
@@ -325,10 +366,12 @@ class Game:
 
     def cycle(self, player: Player) -> None:
         """This will execute a single cycle of play with a given Player."""
-        player.place_bets()
-        winning_bin = self.wheel.choose()
-        for bet in self.table:
-            if bet.outcome in winning_bin:
-                player.win(bet)
-            else:
-                player.lose(bet)
+        if player.playing():
+            player.place_bets()
+            winning_bin = self.wheel.choose()
+            for bet in self.table:
+                if bet.outcome in winning_bin:
+                    player.win(bet)
+                else:
+                    player.lose(bet)
+            self.table.bets = []

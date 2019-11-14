@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import Mock
+from unittest.mock import Mock, MagicMock
 from src.roulette import (
     Outcome,
     Bin,
@@ -8,8 +8,9 @@ from src.roulette import (
     Bet,
     InvalidBet,
     Table,
-    Passenger57,
     Game,
+    Passenger57,
+    Martingale,
 )
 
 
@@ -202,3 +203,43 @@ def test_game():
     game.cycle(player)
     game.cycle(player)
     game.cycle(player)
+
+
+def test_martingale():
+    table = Table()
+    table.limit = 100
+    table.minimum = 1
+
+    wheel = Wheel()
+    ocr = Outcome("Red", 1)
+    ocb = Outcome("Black", 1)
+    wheel.add_outcome(1, ocr)
+    wheel.add_outcome(2, ocb)
+    wheel.rng = Mock(choice=Mock(return_value={ocr}))
+
+    player = Martingale(wheel=wheel, table=table)
+    player.stake = 100
+
+    game = Game(wheel=wheel, table=table)
+
+    assert player.loss_count == 0
+    assert player.bet_multiple == 1
+    # 1st loose
+    game.cycle(player)
+    assert player.loss_count == 1
+    assert player.bet_multiple == 2
+    # 2nd loose
+    game.cycle(player)
+    assert player.loss_count == 2
+    assert player.bet_multiple == 4
+    # 3rd loose
+    game.cycle(player)
+    assert player.loss_count == 3
+    assert player.bet_multiple == 8
+    assert player.stake == 93
+    # 1st win
+    wheel.rng = Mock(choice=Mock(return_value={ocb}))
+    game.cycle(player)
+    assert player.loss_count == 0
+    assert player.bet_multiple == 1
+    assert player.stake == 109
