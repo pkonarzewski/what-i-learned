@@ -1,3 +1,7 @@
+#%%
+from math import ceil
+
+
 #%% liczby parzyste
 def find_brute_force(a,b):
     """
@@ -28,10 +32,11 @@ def find_by_sequenc(a,b):
 print(find_brute_force(1, 10))
 print(find_by_sequenc(1, 10))
 
+
 # %% podzielnosc przez zadane czynniki
-def is_div1(a, b, p):
+def find_div1(a, b, p):
     """
-    Wszystkie liczby w przedziale w przedziale <a,b> przez jedna z liczby z
+    Wszystkie liczby podzielne w przedziale <a,b> przez jedna z liczby z
     podzbioru p
     """
     result = []
@@ -43,15 +48,22 @@ def is_div1(a, b, p):
                 break
     return result
 
-def is_div2(a, b, p):
+def find_div2(a, b, P):
+    """Liczby te będą wielokrotnościami swoich podzielników."""
+
+    P = set([abs(x) for x in P])
+    min_p = []
     result = []
-    v = []
-    p = set([abs(x) for x in p])
 
-    return result
+    for p in P:
+        min_p = ceil(a / p) * p
+
+        for n in range(min_p, b+1, p):
+            result.append(n)
+
+    return sorted(list(set(result)))
 
 
-print(is_div1(-100, 100, [5, 12, 17]))
-print(is_div2(-100, 100, [5, 12, 17]))
-
-# %%
+assert(find_div2(4, 15, [2, 3]) == [4, 6, 8, 9, 10, 12, 14, 15])
+assert(find_div2(-4, 13, [3, 4]) == [-4, -3, 0, 3, 4, 6, 8, 9, 12])
+assert(find_div2(0, 5, [2, 3]) == [0, 2, 3, 4])
