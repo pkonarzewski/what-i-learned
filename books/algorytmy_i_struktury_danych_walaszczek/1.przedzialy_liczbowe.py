@@ -67,3 +67,56 @@ def find_div2(a, b, P):
 assert(find_div2(4, 15, [2, 3]) == [4, 6, 8, 9, 10, 12, 14, 15])
 assert(find_div2(-4, 13, [3, 4]) == [-4, -3, 0, 3, 4, 6, 8, 9, 12])
 assert(find_div2(0, 5, [2, 3]) == [0, 2, 3, 4])
+
+
+# %% podzielny przez kazdy z czynnikow
+def find_div_by_all_1(a, b, P):
+    """W przedziale <a,b> liczb całkowitych wyszukać wszystkie liczby podzielne
+    przez każdą z liczb z zadanego zbioru P liczb względnie pierwszych."""
+
+    P = set([abs(x) for x in P])
+    min_p = []
+    result = []
+    pprod = 1
+
+    for p in P:
+        pprod *= p
+
+
+    min_p = ceil(a / pprod) * pprod
+
+    for n in range(min_p, b+1, pprod):
+        result.append(n)
+
+    return result
+
+
+assert(find_div_by_all_1(-4, 8, [3]) == [-3, 0, 3, 6])
+assert(find_div_by_all_1(0, 22, [3, 7]) == [0, 21])
+
+
+# %%
+def find_not_div(a, b, P):
+    """W przedziale <a,b> liczb całkowitych wyszukać wszystkie liczby niepodzielne
+    przez żadną z liczb z zadanego zbioru P."""
+
+    P = set([abs(x) for x in P])
+    result = []
+
+    for i in range(a, b+1):
+        divisible = False
+        for p in P:
+            if i % p == 0:
+                divisible = True
+                break
+
+        if not divisible:
+            result.append(i)
+
+    return result
+
+assert find_not_div(2, 5, [2, 3, 5]) == []
+assert find_not_div(2, 10, [2, 3, 5]) == [7]
+
+
+# %%
