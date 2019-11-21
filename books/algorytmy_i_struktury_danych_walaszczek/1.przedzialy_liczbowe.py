@@ -120,3 +120,16 @@ assert find_not_div(2, 10, [2, 3, 5]) == [7]
 
 
 # %%
+def arithmetic_progression1(a, n, d):
+    """Algorytm wyznaczania n kolejnych wyrazów ciągu arytmetycznego."""
+
+    result = []
+    for i in range(a, n+1):
+        result.append(a+(i-1)*d)
+    return result
+
+
+print(arithmetic_progression1(3, 10, 3))
+
+
+# %%
