@@ -107,21 +107,30 @@ print('golden ratio O(n)')
 The prime factors of 13195 are 5, 7, 13 and 29.
 What is the largest prime factor of the number 600851475143 ?
 """
-from math import sqrt, floor
+from math import sqrt, ceil
 
 def largest_prime_number_simple(n):
-    prime = []
-    b = 0
-    for i in range(2, n+1):
-        sqrt_i = floor(sqrt(i))
-        for j in range(1, sqrt_i+1):
-            if j % i == 0:
-                pass
-    return b
+    primes = []
+    prime_asymptot = ceil(sqrt(n))
 
-print(largest_prime_number_simple(13195))
-asserrt largest_prime_number_simple(13195) == 29
+    i = 2
+    while i <= n:
+
+
+    return primes
+
+print(largest_prime_number_simple(20))
+
+# print(largest_prime_number_simple(13195))
+# assert largest_prime_number_simple(13195) == 29
 # print(largest_prime_number_simple(600851475143))
 
 
 # %%
+def algo_euk(a, b):
+    c = a - b
+    if c <=ikl.k 0:
+        return a
+    else:
+        if a > b:
+            algo_euk
