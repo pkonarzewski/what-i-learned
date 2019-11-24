@@ -124,12 +124,37 @@ def arithmetic_progression1(a, n, d):
     """Algorytm wyznaczania n kolejnych wyrazów ciągu arytmetycznego."""
 
     result = []
-    for i in range(a, n+1):
+    for i in range(1, n+1):
         result.append(a+(i-1)*d)
     return result
 
+def arithmetic_progression_rec(a, n, d):
+    if n == 1:
+        return [a]
+    else:
+        return [a] + (arithmetic_progression_rec(a+d, n-1, d))
+
 
 print(arithmetic_progression1(3, 10, 3))
+print(arithmetic_progression_rec(3, 10, 3))
 
+
+# %% euclidean algorithm
+def euclid_algo_sub(a, b):
+    while a != b:
+        if a > b:
+            a = a - b
+        else:
+            b = b - a
+    return a
+
+
+def euclid_algo_modulo(a, b):
+    while b != 0:
+        a, b = b, a % b
+    return a
+
+assert euclid_algo_sub(1122, 867) == 51
+print(euclid_algo_modulo(1122, 867))
 
 # %%
