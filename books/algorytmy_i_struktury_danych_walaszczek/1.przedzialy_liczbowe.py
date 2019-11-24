@@ -174,3 +174,10 @@ assert coprimes(1,100, 60) == [1, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47,
 
 
 # %%
+def lcm(a, b):
+    return a*b / gcd(a, b)
+
+assert lcm(9, 6) == 18
+
+
+# %%
