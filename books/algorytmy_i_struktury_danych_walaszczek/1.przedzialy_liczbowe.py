@@ -158,3 +158,19 @@ assert euclid_algo_sub(1122, 867) == 51
 print(euclid_algo_modulo(1122, 867))
 
 # %%
+def gcd(a, b):
+    while b != 0:
+        a, b = b, a % b
+    return a
+
+def coprimes(a, b, p):
+    result = []
+    for i in range(a,b+1):
+        if gcd(i, p) == 1:
+            result.append(i)
+    return result
+
+assert coprimes(1,100, 60) == [1, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 49, 53, 59, 61, 67, 71, 73, 77, 79, 83, 89, 91, 97]
+
+
+# %%
