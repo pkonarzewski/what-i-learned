@@ -127,3 +127,5 @@ dmypy.json
 # IDEs
 .vscode/
 .idea/
+
+/tmp
