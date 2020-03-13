@@ -4,7 +4,7 @@ Roulette game simulator.
 from dataclasses import dataclass
 import random
 from enum import Enum
-from typing import Iterator, List, Sequence
+from typing import Iterator, List
 
 
 class Odds(int, Enum):
@@ -74,7 +74,7 @@ class Bin(set):
 
 class Wheel:
     """
-    Wheel contains the 38 individual bins on a Roulette wheel, plus a random number generator.
+    Wheel contains the 38 individual bins on a Roulette wheel, plus a rng.
     It can select a Bin at random, simulating a spin of the Roulette wheel.
     """
 
@@ -138,7 +138,7 @@ class BinBuilder:
                 wheel.add_outcome(n, Outcome(bet_name.format(n, n + 3), Odds.SPLIT))
                 wheel.add_outcome(n + 3, Outcome(bet_name.format(n, n + 3), Odds.SPLIT))
 
-    def add_street_bets(self, wheel):
+    def add_street_bets(self, wheel: Wheel) -> None:
         """Generate street bets."""
         bet_name = "Street {}-{}-{}"
 
@@ -146,7 +146,7 @@ class BinBuilder:
             for n in row:
                 wheel.add_outcome(n, Outcome(bet_name.format(*row), Odds.STREET))
 
-    def add_corner_bets(self, wheel):
+    def add_corner_bets(self, wheel) -> None:
         """Generate corner bets"""
         bet_name = "Corner {}-{}-{}-{}"
 
@@ -158,7 +158,7 @@ class BinBuilder:
                 wheel.add_outcome(n + 3, Outcome(bname, Odds.CORNER))
                 wheel.add_outcome(n + 4, Outcome(bname, Odds.CORNER))
 
-    def add_line_bets(self, wheel):
+    def add_line_bets(self, wheel: Wheel):
         """Generate line bets."""
         bet_name = "Line {}-{}-{}-{}-{}-{}"
 
@@ -168,7 +168,7 @@ class BinBuilder:
             for n in line_no:
                 wheel.add_outcome(n, Outcome(bname, Odds.LINE))
 
-    def add_dozen_bets(self, wheel):
+    def add_dozen_bets(self, wheel: Wheel) -> None:
         """Generate dozen bes"""
         bet_name = "Dozen {}-{}"
 
@@ -181,7 +181,7 @@ class BinBuilder:
                 bname = bet_name.format(25, 36)
             wheel.add_outcome(n, Outcome(bname, Odds.DOZEN))
 
-    def add_column_bets(self, wheel):
+    def add_column_bets(self, wheel: Wheel):
         """Generate column bets"""
         bet_name = "Column {}"
 
@@ -190,7 +190,7 @@ class BinBuilder:
             wheel.add_outcome(row[1], Outcome(bet_name.format(2), Odds.COLUMN))
             wheel.add_outcome(row[2], Outcome(bet_name.format(3), Odds.COLUMN))
 
-    def add_even_money_bets(self, wheel):
+    def add_even_money_bets(self, wheel: Wheel) -> None:
         """Generate even-money bets"""
 
         for n in range(1, 37):
@@ -209,7 +209,7 @@ class BinBuilder:
             else:
                 wheel.add_outcome(n, Outcome("Black", Odds.EVEN))
 
-    def add_five_bet(self, wheel):
+    def add_five_bet(self, wheel: Wheel) -> None:
         """Generate five bet"""
         bet_name = "00-0-1-2-3"
 
@@ -229,7 +229,7 @@ class Bet:
     outcome: Outcome
 
     def win_amount(self) -> int:
-        """Uses the Outcome’s winAmount to compute the amount won, given the amount of this bet"""
+        """Uses the Outcome’s winAmount to compute the amount won"""
         return self.amount + self.amount * self.outcome.odds
 
     def lose_amount(self) -> int:
