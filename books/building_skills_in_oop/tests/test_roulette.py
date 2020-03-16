@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import Mock
-from src.roulette import (
+from casino.roulette import (
     Outcome,
     Bin,
     Wheel,
@@ -182,6 +182,7 @@ def test_passanger57():
     oc1 = Outcome("Black", 1)
     wheel.add_outcome(2, oc1)
     player = Passenger57(table, wheel)
+    player.stake = 100
 
     player.place_bets()
     assert Bet(1, oc1) in table.bets
@@ -219,19 +220,21 @@ def test_martingale():
 
     player = Martingale(wheel=wheel, table=table)
     player.stake = 100
+    assert player.loss_count == 0
+    assert player.bet_multiple == 1
 
     game = Game(wheel=wheel, table=table)
 
-    assert player.loss_count == 0
-    assert player.bet_multiple == 1
     # 1st loose
     game.cycle(player)
     assert player.loss_count == 1
     assert player.bet_multiple == 2
+    assert player.stake == 99
     # 2nd loose
     game.cycle(player)
     assert player.loss_count == 2
     assert player.bet_multiple == 4
+    assert player.stake == 97
     # 3rd loose
     game.cycle(player)
     assert player.loss_count == 3
@@ -242,4 +245,4 @@ def test_martingale():
     game.cycle(player)
     assert player.loss_count == 0
     assert player.bet_multiple == 1
-    assert player.stake == 109
+    assert player.stake == 101

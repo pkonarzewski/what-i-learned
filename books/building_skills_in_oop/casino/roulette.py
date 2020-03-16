@@ -4,6 +4,7 @@ Roulette game simulator.
 from dataclasses import dataclass
 import random
 from enum import Enum
+from abc import ABC, abstractmethod
 from typing import Iterator, List
 
 
@@ -146,7 +147,7 @@ class BinBuilder:
             for n in row:
                 wheel.add_outcome(n, Outcome(bet_name.format(*row), Odds.STREET))
 
-    def add_corner_bets(self, wheel) -> None:
+    def add_corner_bets(self, wheel: Wheel) -> None:
         """Generate corner bets"""
         bet_name = "Corner {}-{}-{}-{}"
 
@@ -222,8 +223,7 @@ class BinBuilder:
 
 @dataclass
 class Bet:
-    """Bet associates an amount and an Outcome. In a future round of design,
-    we can also associate a Bet with a Player."""
+    """Bet associates an amount and an Outcome."""
 
     amount: int
     outcome: Outcome
@@ -233,7 +233,7 @@ class Bet:
         return self.amount + self.amount * self.outcome.odds
 
     def lose_amount(self) -> int:
-        """Returns the amount bet as the amount lost. This is the cost of placing the bet."""
+        """Returns the amount lost. This is the cost of placing the bet."""
         return self.amount
 
     def __str__(self) -> str:
@@ -278,29 +278,33 @@ class Table:
         return f"Table({', '.join([repr(b) for b in self.bets])})"
 
 
-class Player:
+class Player(ABC):
     """Player places bets in Roulette. This an abstract class, with no actual
     body for the Player.placeBets() method. However, this class does implement
     the basic Player.win() method used by all subclasses.
     """
 
-    def __init__(self, table: Table, wheel: Wheel) -> None:
+    stake: int
+    rounds_to_go: int
+
+    def __init__(self, table: Table) -> None:
         self.table: Table = table
-        self.stake: int = -1
-        self.rounds_to_go: int = -1
 
+    @abstractmethod
     def playing(self) -> bool:
-        raise NotImplementedError()
+        """Indicate that player is active."""
+        pass
 
+    @abstractmethod
     def place_bets(self) -> None:
         """Updates the Table object with the various bets.
         This version creates a Bet instance from the “Black” Outcome instance.
         """
-        raise NotImplementedError()
+        pass
 
     def win(self, bet: Bet) -> None:
         """Notification from the Game object that the Bet instance was a winner."""
-        pass
+        self.stake += bet.win_amount()
 
     def lose(self, bet: Bet) -> None:
         """Notification from the Game object that the Bet instance was a loser."""
@@ -327,27 +331,26 @@ class Martingale(Player):
     their bet on every loss and resets their bet to a base amount on each win.
     """
 
+    loss_count: int = 0
+
     def __init__(self, table: Table, wheel: Wheel):
         self.table = table
-        self.loss_count = 0
         self.black = wheel.get_outcome("Black")
+        super().__init__(table)
 
     @property
     def bet_multiple(self):
         return 2 ** self.loss_count
 
     def playing(self) -> bool:
-        if self.bet_multiple <= self.table.limit and self.stake >= self.bet_multiple:
-            return True
-        else:
-            return False
+        return True
 
     def place_bets(self) -> None:
         self.table.place_bet(Bet(self.bet_multiple, self.black))
         self.stake -= self.bet_multiple
 
     def win(self, bet: Bet) -> None:
-        self.stake += bet.amount + bet.win_amount()
+        super().win(bet)
         self.loss_count = 0
 
     def lose(self, bet: Bet) -> None:
