@@ -1,16 +1,17 @@
 import pytest
 from unittest.mock import Mock
 from casino.roulette import (
-    Outcome,
-    Bin,
-    Wheel,
-    BinBuilder,
     Bet,
-    InvalidBet,
-    Table,
+    Bin,
+    BinBuilder,
     Game,
-    Passenger57,
+    InvalidBet,
     Martingale,
+    Outcome,
+    Passenger57,
+    Simulator,
+    Table,
+    Wheel,
 )
 
 
@@ -155,9 +156,9 @@ def test_table():
     table.limit = 300
     table.minimum = 10
     assert str(table) == "Table(bets amount=210)"
-    assert (
-        repr(table)
-        == "Table(Bet(amount=10, outcome=Outcome(name='Red', odds=1)), Bet(amount=200, outcome=Outcome(name='Red', odds=1)))"
+    assert repr(table) == (
+        "Table(Bet(amount=10, outcome=Outcome(name='Red', odds=1)), "
+        "Bet(amount=200, outcome=Outcome(name='Red', odds=1)))"
     )
 
     with pytest.raises(InvalidBet):
@@ -177,7 +178,7 @@ def test_table():
 def test_passanger57():
     table = Table()
     table.limit = 100
-    table.minimum = 1
+    table.minimum = 15
     wheel = Wheel()
     oc1 = Outcome("Black", 1)
     wheel.add_outcome(2, oc1)
@@ -185,7 +186,11 @@ def test_passanger57():
     player.stake = 100
 
     player.place_bets()
-    assert Bet(1, oc1) in table.bets
+    assert Bet(15, oc1) in table.bets
+
+    table.minimum = 5
+    player.place_bets()
+    assert Bet(5, oc1) in table.bets
 
     player.win(Bet(1, oc1))
     player.lose(Bet(1, oc1))
@@ -208,7 +213,7 @@ def test_game():
 
 def test_martingale():
     table = Table()
-    table.limit = 100
+    table.limit = 10
     table.minimum = 1
 
     wheel = Wheel()
@@ -220,29 +225,46 @@ def test_martingale():
 
     player = Martingale(wheel=wheel, table=table)
     player.stake = 100
+    player.rounds_to_go = 100
     assert player.loss_count == 0
     assert player.bet_multiple == 1
 
     game = Game(wheel=wheel, table=table)
 
-    # 1st loose
+    assert player.stake == 100
+    # 1st loose  2^0
     game.cycle(player)
+    assert player.stake == 99
     assert player.loss_count == 1
     assert player.bet_multiple == 2
-    assert player.stake == 99
-    # 2nd loose
+    # 2nd loose 2^1
     game.cycle(player)
+    assert player.stake == 97
     assert player.loss_count == 2
     assert player.bet_multiple == 4
-    assert player.stake == 97
-    # 3rd loose
+    # 3rd loose 2^2
     game.cycle(player)
+    assert player.stake == 93
     assert player.loss_count == 3
     assert player.bet_multiple == 8
-    assert player.stake == 93
-    # 1st win
+    # 4th loose - 2^3
+    game.cycle(player)
+    assert player.stake == 85
+    assert player.loss_count == 4
+    assert player.bet_multiple == 16
+    # 1st win (hit table limit))
     wheel.rng = Mock(choice=Mock(return_value={ocb}))
     game.cycle(player)
+    assert player.stake == 95
     assert player.loss_count == 0
     assert player.bet_multiple == 1
-    assert player.stake == 101
+
+
+# def test_simulator():
+
+#     game = Mock()
+#     player = Mock()
+
+#     # simulator = Simulator(game, player)
+
+#     # assert simulator.session() == []
