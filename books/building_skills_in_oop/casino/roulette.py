@@ -465,6 +465,53 @@ class Player1326(Player):
         self.state = self.state.next_lost()
 
 
+class CancellationPlayer(Player):
+    def __init__(self, table: Table, wheel: Wheel) -> None:
+        self.sequence: List[int] = []
+        self.reset_sequence()
+        self.outcome = wheel.get_outcome("Black")
+        super().__init__(table, wheel)
+
+    def reset_sequence(self) -> None:
+        self.sequence = [1, 2, 3, 4, 5, 6]
+
+    def place_bets(self) -> None:
+        amount = min((self.sequence[0] + self.sequence[-1]), self.stake)
+        self.table.place_bet(Bet(amount, self.outcome))
+        self.stake -= amount
+
+    def win(self, bet: Bet) -> None:
+        super().win(bet)
+        self.sequence = self.sequence[1:-1]
+
+    def lose(self, bet: Bet) -> None:
+        self.sequence = self.sequence[1:] + [self.sequence[0] + self.sequence[-1]]
+
+    def playing(self) -> bool:
+        return super().playing() and len(self.sequence) > 0
+
+
+class FibonacciPlayer(Player):
+    def __init__(self, table: Table, wheel: Wheel) -> None:
+        self.recent = 1
+        self.previous = 0
+        self.outcome = wheel.get_outcome("Black")
+        super().__init__(table, wheel)
+
+    def place_bets(self) -> None:
+        amount = min(self.recent + self.previous, self.stake)
+        self.table.place_bet(Bet(amount, self.outcome))
+        self.stake -= amount
+
+    def win(self, bet: Bet) -> None:
+        super().win(bet)
+        self.recent = 1
+        self.previous = 0
+
+    def lose(self, bet: Bet) -> None:
+        self.recent, self.previous = self.recent + self.previous, self.recent
+
+
 @dataclass
 class Game:
     """Game manages the sequence of actions that defines the game of Roulette.
@@ -542,9 +589,9 @@ def main():
     wheel = Wheel()
     BinBuilder().build_bins(wheel)
     table = Table()
-    table.limit = 100
+    table.limit = 1000
 
-    player = Player1326
+    player = FibonacciPlayer
     game = Game(wheel, table)
 
     simulation = Simulator(game, player)

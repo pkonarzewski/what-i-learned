@@ -4,6 +4,8 @@ from casino.roulette import (
     Bet,
     Bin,
     BinBuilder,
+    CancellationPlayer,
+    FibonacciPlayer,
     Game,
     IntegerStatistics,
     InvalidBet,
@@ -365,6 +367,88 @@ def test_random_player():
     player.stake = 100
     player.rng = Mock(choice=Mock(return_value={ocb}))
     game.cycle(player)
+
+
+def test_cancellation_player():
+    table = Table()
+    table.limit = 100
+
+    wheel = Wheel()
+    ocr = Outcome("Red", 1)
+    ocb = Outcome("Black", 1)
+    wheel.add_outcome(1, ocr)
+    wheel.add_outcome(2, ocb)
+
+    player = CancellationPlayer(wheel=wheel, table=table)
+    player.stake = 100
+    player.rounds_to_go = 100
+
+    game = Game(wheel=wheel, table=table)
+    wheel.rng = Mock(choice=Mock(return_value={ocb}))
+
+    assert player.playing() is True
+    game.cycle(player)
+    assert player.stake == 107
+    game.cycle(player)
+    assert player.stake == 114
+    game.cycle(player)
+    assert player.stake == 121
+    assert player.playing() is False
+
+    player.reset_sequence()
+    player.stake = 100
+    assert player.playing() is True
+    wheel.rng = Mock(choice=Mock(return_value={ocr}))
+    game.cycle(player)
+    assert player.stake == 93
+    game.cycle(player)
+    assert player.stake == 84
+    game.cycle(player)
+    assert player.stake == 72
+
+    wheel.rng = Mock(choice=Mock(return_value={ocb}))
+    game.cycle(player)
+    assert player.stake == 88
+
+
+def test_fibonacci_player():
+    table = Table()
+    table.limit = 100
+
+    wheel = Wheel()
+    ocr = Outcome("Red", 1)
+    ocb = Outcome("Black", 1)
+    wheel.add_outcome(1, ocr)
+    wheel.add_outcome(2, ocb)
+
+    player = FibonacciPlayer(wheel=wheel, table=table)
+    player.stake = 100
+    player.rounds_to_go = 100
+
+    game = Game(wheel=wheel, table=table)
+    wheel.rng = Mock(choice=Mock(return_value={ocb}))
+
+    game.cycle(player)
+    assert player.stake == 101
+    game.cycle(player)
+    assert player.stake == 102
+
+    wheel.rng = Mock(choice=Mock(return_value={ocr}))
+
+    game.cycle(player)
+    assert player.stake == 101
+    game.cycle(player)
+    assert player.stake == 99
+    game.cycle(player)
+    assert player.stake == 96
+    game.cycle(player)
+    assert player.stake == 91
+
+    wheel.rng = Mock(choice=Mock(return_value={ocb}))
+    game.cycle(player)
+    assert player.stake == 99
+    game.cycle(player)
+    assert player.stake == 100
 
 
 def test_simulator():
