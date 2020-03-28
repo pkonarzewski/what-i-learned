@@ -5,7 +5,8 @@ from dataclasses import dataclass
 import random
 from enum import Enum
 from abc import ABC, abstractmethod
-from typing import Iterator, List
+from typing import Iterator, List, Type, Set
+from math import sqrt
 
 
 class Odds(int, Enum):
@@ -101,6 +102,9 @@ class Wheel:
 
     def get_outcome(self, name: str) -> Outcome:
         return self.outcomes[name]
+
+    def __iter__(self):
+        return iter(self.bins)
 
 
 class BinBuilder:
@@ -247,24 +251,18 @@ class Table:
     in the simulation.
     """
 
-    limit: int
-    minimum: int
-
     def __init__(self, *bets: Bet) -> None:
         self.bets: List[Bet] = [*bets] if bets is not None else []
+        self.limit: int = 0
 
     def place_bet(self, bet: Bet) -> None:
         """Adds this bet to the list of working bets."""
         self.bets.append(bet)
-        self.is_valid()
 
     def is_valid(self):
         """If there’s a problem an InvalidBet exception is raised."""
-        if (
-            sum([b.amount for b in self.bets]) > self.limit
-            or min([b.amount for b in self.bets]) < self.minimum
-        ):
-            raise InvalidBet("Invalid Bet")
+        if sum([b.amount for b in self.bets]) > self.limit:
+            raise InvalidBet(f"Invalid Bets {self.bets}")
 
     def __iter__(self) -> Iterator[Bet]:
         """Returns an iterator over the available list of Bet instances.
@@ -284,16 +282,16 @@ class Player(ABC):
     the basic Player.win() method used by all subclasses.
     """
 
-    stake: int
-    rounds_to_go: int
-
-    def __init__(self, table: Table) -> None:
+    def __init__(self, table: Table, wheel: Wheel) -> None:
         self.table: Table = table
+        self.stake: int = 0
+        self.rounds_to_go: int = 0
 
-    @abstractmethod
     def playing(self) -> bool:
         """Indicate that player is active."""
-        pass
+        if self.stake > 0 and self.rounds_to_go > 0:
+            return True
+        return False
 
     @abstractmethod
     def place_bets(self) -> None:
@@ -310,20 +308,23 @@ class Player(ABC):
         """Notification from the Game object that the Bet instance was a loser."""
         pass
 
+    def winners(self, outcomes: Set[Outcome]) -> None:
+        """Notife Player about winning outcomes."""
+        pass
+
 
 class Passenger57(Player):
     """Passenger57 constructs a Bet instance based on the Outcome object named
     "Black". This is a very persistent player."""
 
     def __init__(self, table: Table, wheel: Wheel) -> None:
-        self.table = table
         self.black = wheel.get_outcome("Black")
-
-    def playing(self) -> bool:
-        return True
+        super().__init__(table, wheel)
 
     def place_bets(self) -> None:
-        self.table.place_bet(Bet(1, self.black))
+        bet: Bet = Bet(10, self.black)
+        self.table.place_bet(bet)
+        self.stake -= bet.lose_amount()
 
 
 class Martingale(Player):
@@ -331,23 +332,19 @@ class Martingale(Player):
     their bet on every loss and resets their bet to a base amount on each win.
     """
 
-    loss_count: int = 0
-
-    def __init__(self, table: Table, wheel: Wheel):
-        self.table = table
-        self.black = wheel.get_outcome("Black")
-        super().__init__(table)
+    def __init__(self, table: Table, wheel: Wheel) -> None:
+        self.black: Outcome = wheel.get_outcome("Black")
+        self.loss_count: int = 0
+        super().__init__(table, wheel)
 
     @property
-    def bet_multiple(self):
+    def bet_multiple(self) -> int:
         return 2 ** self.loss_count
 
-    def playing(self) -> bool:
-        return True
-
     def place_bets(self) -> None:
-        self.table.place_bet(Bet(self.bet_multiple, self.black))
-        self.stake -= self.bet_multiple
+        bet: Bet = Bet(min(self.bet_multiple, self.table.limit), self.black)
+        self.table.place_bet(bet)
+        self.stake -= bet.lose_amount()
 
     def win(self, bet: Bet) -> None:
         super().win(bet)
@@ -355,6 +352,117 @@ class Martingale(Player):
 
     def lose(self, bet: Bet) -> None:
         self.loss_count += 1
+
+
+class SevenReds(Martingale):
+    """x."""
+
+    def __init__(self, table: Table, wheel: Wheel) -> None:
+        self.table = table
+        self.red_count = 7
+        self.red_outcome = wheel.get_outcome("Red")
+        self.black_outcome = wheel.get_outcome("Black")
+        super().__init__(table, wheel)
+
+    def winners(self, outcomes: Set[Outcome]) -> None:
+        """x."""
+        if self.red_outcome in outcomes:
+            self.red_count -= 1
+        else:
+            self.red_count = 7
+
+    def place_bets(self) -> None:
+        if self.red_count <= 0:
+            super().place_bets()
+
+
+class RandomPlayer(Player):
+    def __init__(self, table: Table, wheel: Wheel) -> None:
+        self.rng = random.Random()
+        self.all_oc: List[Outcome] = self.load_outcomes(wheel)
+        super().__init__(table, wheel)
+
+    def load_outcomes(self, wheel: Wheel) -> List[Outcome]:
+        all_oc: Set[Outcome] = set()
+        for bin in wheel:
+            all_oc |= bin
+        return list(all_oc)
+
+    def place_bets(self) -> None:
+        bet: Bet = Bet(10, self.rng.choice(self.all_oc))
+        self.table.place_bet(bet)
+        self.stake -= bet.lose_amount()
+
+
+class Player1326State:
+    bet_amount: int = 0
+
+    def __init__(self, player: Player) -> None:
+        self.player = player
+
+    def current_bet(self) -> Bet:
+        return Bet(self.bet_amount, self.player.outcome)
+
+    def next_won(self) -> "Player1326State":
+        return NotImplemented
+
+    def next_lost(self) -> "Player1326State":
+        return Player1326NoWins(self.player)
+
+
+class Player1326NoWins(Player1326State):
+    def __init__(self, player: Player) -> None:
+        self.bet_amount = 1
+        super().__init__(player)
+
+    def next_won(self) -> Player1326State:
+        return Player1326OneWin(self.player)
+
+
+class Player1326OneWin(Player1326State):
+    def __init__(self, player: Player) -> None:
+        self.bet_amount = 3
+        super().__init__(player)
+
+    def next_won(self) -> Player1326State:
+        return Player1326TwoWins(self.player)
+
+
+class Player1326TwoWins(Player1326State):
+    def __init__(self, player: Player) -> None:
+        self.bet_amount = 2
+        super().__init__(player)
+
+    def next_won(self) -> Player1326State:
+        return Player1326ThreeWins(self.player)
+
+
+class Player1326ThreeWins(Player1326State):
+    def __init__(self, player: Player) -> None:
+        self.bet_amount = 6
+        super().__init__(player)
+
+    def next_won(self) -> Player1326State:
+        return Player1326NoWins(self.player)
+
+
+class Player1326(Player):
+    def __init__(self, table: Table, wheel: Wheel) -> None:
+        self.outcome = wheel.get_outcome("Black")
+        self.state = Player1326NoWins(self)
+        super().__init__(table, wheel)
+
+    def place_bets(self) -> None:
+        bet: Bet = self.state.current_bet()
+        self.table.place_bet(bet)
+        self.stake -= bet.lose_amount()
+
+    def win(self, bet: Bet) -> None:
+        super().win(bet)
+        self.state = self.state.next_won()
+
+    def lose(self, bet: Bet) -> None:
+        self.state = self.state.next_lost()
 
 
 @dataclass
@@ -369,12 +477,91 @@ class Game:
 
     def cycle(self, player: Player) -> None:
         """This will execute a single cycle of play with a given Player."""
-        if player.playing():
-            player.place_bets()
-            winning_bin = self.wheel.choose()
-            for bet in self.table:
-                if bet.outcome in winning_bin:
-                    player.win(bet)
-                else:
-                    player.lose(bet)
-            self.table.bets = []
+        player.place_bets()
+        self.table.is_valid()
+        winning_bin = self.wheel.choose()
+        player.winners(winning_bin)
+        for bet in self.table:
+            if bet.outcome in winning_bin:
+                player.win(bet)
+            else:
+                player.lose(bet)
+        self.table.bets = []
+
+
+class Simulator:
+    """Simulator."""
+
+    def __init__(self, game: Game, player: Type[Player]) -> None:
+        self.game: Game = game
+        self.player: Type[Player] = player
+        self.init_duration: int = 250
+        self.init_stake: int = 1000
+        self.samples: int = 50
+        self.durations: IntegerStatistics = IntegerStatistics()
+        self.maximas: IntegerStatistics = IntegerStatistics()
+        self.last_value: IntegerStatistics = IntegerStatistics()
+
+    def session(self) -> List[int]:
+        """x."""
+        player = self.player(self.game.table, self.game.wheel)
+        player.stake = self.init_stake
+        player.rounds_to_go = self.init_duration
+
+        stakes: List[int] = []
+
+        while player.playing():
+            self.game.cycle(player)
+            stakes.append(player.stake)
+            player.rounds_to_go -= 1
+        return stakes
+
+    def gather(self) -> None:
+        """x."""
+        for i in range(self.samples):
+            result = self.session()
+            self.durations.append(len(result))
+            self.maximas.append(max(result))
+            self.last_value.append(result[-1])
+
+
+class IntegerStatistics(list):
+    """List that has some descriptive statistics."""
+
+    def mean(self) -> float:
+        return sum(self) / len(self)
+
+    def stdev(self) -> float:
+        m = self.mean()
+        return sqrt(sum((x - m) ** 2 for x in self) / (len(self) - 1))
+
+
+def main():
+    """Execute simulation."""
+
+    wheel = Wheel()
+    BinBuilder().build_bins(wheel)
+    table = Table()
+    table.limit = 100
+
+    player = Player1326
+    game = Game(wheel, table)
+
+    simulation = Simulator(game, player)
+    simulation.init_duration = 2500
+    simulation.gather()
+
+    print(
+        "Result of simulation:\n"
+        f"Strategy: {player.__name__}\n"
+        f"Min-Max stake: {min(simulation.maximas)}-{max(simulation.maximas)}\n"
+        f"Median stake: {sorted(simulation.maximas)[len(simulation.maximas)//2]}\n"
+        f"Stdev: {simulation.maximas.stdev()}\n"
+        f"Avg duration: {simulation.durations}\n"
+        f"Fin stake: {simulation.last_value}\n"
+        f"Max stake: {simulation.maximas}\n"
+    )
+
+
+if __name__ == "__main__":
+    main()

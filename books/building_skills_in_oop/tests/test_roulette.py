@@ -5,10 +5,18 @@ from casino.roulette import (
     Bin,
     BinBuilder,
     Game,
+    IntegerStatistics,
     InvalidBet,
     Martingale,
     Outcome,
     Passenger57,
+    Player1326,
+    Player1326NoWins,
+    Player1326OneWin,
+    Player1326ThreeWins,
+    Player1326TwoWins,
+    RandomPlayer,
+    SevenReds,
     Simulator,
     Table,
     Wheel,
@@ -56,6 +64,9 @@ def test_wheel():
     value = wheel.choose()
     assert value == "bin1"
     mock_rng.choice.assert_called_with(bins)
+
+    for b in wheel:
+        assert isinstance(b, str)
 
 
 def test_bin_builder_full():
@@ -154,7 +165,6 @@ def test_table():
 
     table = Table(Bet(10, o1), Bet(200, o1))
     table.limit = 300
-    table.minimum = 10
     assert str(table) == "Table(bets amount=210)"
     assert repr(table) == (
         "Table(Bet(amount=10, outcome=Outcome(name='Red', odds=1)), "
@@ -163,12 +173,7 @@ def test_table():
 
     with pytest.raises(InvalidBet):
         table.bets = []
-        table.place_bet(Bet(1000, o1))
-        table.is_valid()
-
-    with pytest.raises(InvalidBet):
-        table.bets = []
-        table.place_bet(Bet(3, o1))
+        table.bets.append(Bet(1000, o1))
         table.is_valid()
 
     for b in table:
@@ -178,7 +183,6 @@ def test_table():
 def test_passanger57():
     table = Table()
     table.limit = 100
-    table.minimum = 15
     wheel = Wheel()
     oc1 = Outcome("Black", 1)
     wheel.add_outcome(2, oc1)
@@ -186,11 +190,7 @@ def test_passanger57():
     player.stake = 100
 
     player.place_bets()
-    assert Bet(15, oc1) in table.bets
-
-    table.minimum = 5
-    player.place_bets()
-    assert Bet(5, oc1) in table.bets
+    assert Bet(10, oc1) in table.bets
 
     player.win(Bet(1, oc1))
     player.lose(Bet(1, oc1))
@@ -199,7 +199,6 @@ def test_passanger57():
 def test_game():
     table = Table()
     table.limit = 100
-    table.minimum = 1
     wheel = Wheel()
     oc1 = Outcome("Black", 1)
     wheel.add_outcome(2, oc1)
@@ -214,7 +213,6 @@ def test_game():
 def test_martingale():
     table = Table()
     table.limit = 10
-    table.minimum = 1
 
     wheel = Wheel()
     ocr = Outcome("Red", 1)
@@ -225,7 +223,6 @@ def test_martingale():
 
     player = Martingale(wheel=wheel, table=table)
     player.stake = 100
-    player.rounds_to_go = 100
     assert player.loss_count == 0
     assert player.bet_multiple == 1
 
@@ -260,11 +257,146 @@ def test_martingale():
     assert player.bet_multiple == 1
 
 
-# def test_simulator():
+def test_seven_reds():
 
-#     game = Mock()
-#     player = Mock()
+    table = Table()
+    table.limit = 100
 
-#     # simulator = Simulator(game, player)
+    wheel = Wheel()
+    ocr = Outcome("Red", 1)
+    ocb = Outcome("Black", 1)
+    wheel.add_outcome(1, ocr)
+    wheel.add_outcome(2, ocb)
 
-#     # assert simulator.session() == []
+    game = Game(wheel=wheel, table=table)
+
+    player = SevenReds(wheel=wheel, table=table)
+    player.stake = 100
+
+    # check no bets
+    wheel.rng = Mock(choice=Mock(return_value={ocb}))
+    for _ in range(8):
+        game.cycle(player)
+        assert player.red_count == 7
+        assert player.stake == 100
+
+    wheel.rng = Mock(choice=Mock(return_value={ocr}))
+    for i in range(7):
+        assert player.red_count == 7 - i
+        game.cycle(player)
+        assert player.stake == 100
+
+    game.cycle(player)
+    assert player.stake == 99
+    assert player.loss_count == 1
+    assert player.red_count == -1
+
+    game.cycle(player)
+    assert player.stake == 97
+    assert player.loss_count == 2
+    assert player.red_count == -2
+
+    wheel.rng = Mock(choice=Mock(return_value={ocb}))
+    game.cycle(player)
+    assert player.stake == 101
+    assert player.loss_count == 0
+    assert player.red_count == 7
+
+
+def test_player1326():
+
+    wheel = Wheel()
+    ocr = Outcome("Red", 1)
+    ocb = Outcome("Black", 1)
+    wheel.add_outcome(0, ocb)
+    wheel.add_outcome(1, ocr)
+    table = Table()
+    table.limit = 100
+
+    player = Player1326(table, wheel)
+    player.stake = 100
+    player.rounds_to_go = 100
+
+    nowin = Player1326NoWins(player)
+    base_amount = nowin.current_bet().amount
+
+    onewin = Player1326OneWin(player)
+    assert onewin.current_bet().amount / base_amount == 3
+    twowin = Player1326TwoWins(player)
+    assert twowin.current_bet().amount / base_amount == 2
+    threewin = Player1326ThreeWins(player)
+    assert threewin.current_bet().amount / base_amount == 6
+
+    # simulate game
+
+    game = Game(wheel, table)
+    wheel.rng = Mock(choice=Mock(return_value={ocb}))
+
+    assert isinstance(player.state, Player1326NoWins)
+    game.cycle(player)
+    assert isinstance(player.state, Player1326OneWin)
+    game.cycle(player)
+    assert isinstance(player.state, Player1326TwoWins)
+    game.cycle(player)
+    assert isinstance(player.state, Player1326ThreeWins)
+    game.cycle(player)
+    assert isinstance(player.state, Player1326NoWins)
+    game.cycle(player)
+    game.cycle(player)
+    wheel.rng = Mock(choice=Mock(return_value={ocr}))
+    game.cycle(player)
+    assert isinstance(player.state, Player1326NoWins)
+
+
+def test_random_player():
+
+    table = Table()
+    table.limit = 100
+
+    wheel = Wheel()
+    ocr = Outcome("Red", 1)
+    ocb = Outcome("Black", 1)
+    wheel.add_outcome(1, ocr)
+    wheel.add_outcome(2, ocb)
+
+    game = Game(wheel=wheel, table=table)
+
+    player = RandomPlayer(wheel=wheel, table=table)
+    player.stake = 100
+    player.rng = Mock(choice=Mock(return_value={ocb}))
+    game.cycle(player)
+
+
+def test_simulator():
+
+    table = Table()
+    table.limit = 100
+
+    wheel = Wheel()
+    ocr = Outcome("Red", 1)
+    ocb = Outcome("Black", 1)
+    wheel.add_outcome(1, ocr)
+    wheel.add_outcome(2, ocb)
+
+    game = Game(wheel=wheel, table=table)
+
+    player = Passenger57
+    player.stake = 100
+
+    sim = Simulator(game, player)
+
+    sim.session()
+
+    sim.gather()
+
+
+def test_integer_statistics():
+
+    test_data = [10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5]
+
+    istats = IntegerStatistics(test_data)
+
+    assert sum(istats) == 99
+    assert len(istats) == 11
+    assert istats.mean() == 9.0
+    assert round(istats.stdev(), 3) == 3.317
