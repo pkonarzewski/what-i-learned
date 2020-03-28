@@ -322,7 +322,7 @@ class Passenger57(Player):
         super().__init__(table, wheel)
 
     def place_bets(self) -> None:
-        bet: Bet = Bet(10, self.black)
+        bet: Bet = min(Bet(10, self.black), self.stake)
         self.table.place_bet(bet)
         self.stake -= bet.lose_amount()
 
@@ -342,7 +342,9 @@ class Martingale(Player):
         return 2 ** self.loss_count
 
     def place_bets(self) -> None:
-        bet: Bet = Bet(min(self.bet_multiple, self.table.limit), self.black)
+        bet: Bet = Bet(
+            min(min(self.bet_multiple, self.table.limit), self.stake), self.black
+        )
         self.table.place_bet(bet)
         self.stake -= bet.lose_amount()
 
@@ -591,7 +593,7 @@ def main():
     table = Table()
     table.limit = 1000
 
-    player = FibonacciPlayer
+    player = SevenReds
     game = Game(wheel, table)
 
     simulation = Simulator(game, player)
