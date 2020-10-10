@@ -46,9 +46,9 @@ def binary_contains(gene: Gene, key_codon: Codon) -> bool:
     while low <= high:
         mid: int = (low + high) // 2
         if gene[mid] > key_codon:
-            high: int = mid - 1
+            high = mid - 1
         elif gene[mid] < key_codon:
-            low: int = mid + 1
+            low = mid + 1
         else:
             return True
     return False
