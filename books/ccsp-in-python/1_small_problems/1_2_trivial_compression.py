@@ -23,6 +23,17 @@ class CompressedGene:
                 raise ValueError(f'Invalid Nucleotide: {nucleotide}')
 
     def decompress(self) -> str:
+        """Dekompresja.
+
+        Dekompresja działa następująco:
+        - przesuwamy łańcuch bitów o 2 (zaczynając od 0)
+        - korzystając z operatora AND otrzymujemy dwa ostatnie bity, bo
+         0b11 & bit dowolnej długościa daje nam dwa ostatnie bity
+         0b010110
+             0b11
+             ----
+         0b000010, czyli 0b10
+        """
         gene: str = ''
 
         for i in range(0, self.bit_string.bit_length() - 1, 2):
