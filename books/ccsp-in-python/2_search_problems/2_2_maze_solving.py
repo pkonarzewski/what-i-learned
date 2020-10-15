@@ -8,7 +8,7 @@ from math import sqrt
 
 root = os.path.dirname(__file__)
 sys.path.append(root)
-from generic_search import dfs, bfs, node_to_path, Node
+from generic_search import dfs, bfs, astar, node_to_path, Node
 
 
 class Cell(str, Enum):
@@ -22,6 +22,7 @@ class Cell(str, Enum):
 class MazeLocation(NamedTuple):
     row: int
     column: int
+
 
 
 class Maze:
@@ -76,9 +77,28 @@ class Maze:
             output += ''.join([c.value for c in row]) + '\n'
         return output
 
+
+def euclidean_distance(goal: MazeLocation) -> Callable[[MazeLocation], float]:
+    def distance(ml: MazeLocation) -> float:
+        xdist: int = ml.column - goal.column
+        ydist: int = ml.row - goal.row
+        return sqrt((xdist * xdist) + (ydist * ydist))
+    return distance
+
+
+def manhattan_distance(goal: MazeLocation) -> Callable[[MazeLocation], float]:
+    def distance(ml: MazeLocation) -> float:
+        xdist: int = abs(ml.column - goal.column)
+        ydist: int = abs(ml.row - goal.row)
+        return (xdist + ydist)
+    return distance
+
+
 #%% DFS
+print("================")
 m: Maze = Maze()
 print(m)
+
 solution1: Optional[Node[MazeLocation]] = dfs(m.start, m.goal_test, m.successors)
 if solution1 is None:
     print('No solution found using depth-first search')
@@ -89,8 +109,6 @@ else:
     m.clear(path1)
 
 #%% BFS
-m: Maze = Maze()
-print(m)
 solution2: Optional[Node[MazeLocation]] = bfs(m.start, m.goal_test, m.successors)
 if solution2 is None:
     print('No solution found using depth-first search')
@@ -101,3 +119,14 @@ else:
     m.clear(path1)
 
 # %% A*
+distance: Callable[[MazeLocation], float] = manhattan_distance(m.goal)
+solution3: Optional[Node[MazeLocation]] = astar(m.start, m.goal_test, m.successors, distance)
+if solution3 is None:
+    print("No solution found using A*!")
+else:
+    path3: List[MazeLocation] = node_to_path(solution3)
+    m.mark(path3)
+    print(m)
+    m.clear(path3)
+
+# %%
