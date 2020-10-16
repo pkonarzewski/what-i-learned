@@ -12,4 +12,5 @@ def calculate_pi(n_terms: int) -> float:
         operation *= -1.0
     return pi
 
+
 print(calculate_pi(1000000))
