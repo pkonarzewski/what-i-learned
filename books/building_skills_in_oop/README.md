@@ -9,3 +9,9 @@
 [Rules and bets explanation](https://www.roulette17.com/layout/)
 
 ![ruletka](./misc/roulette.png)
+
+### Craps
+
+[Rules pl](https://ikasyna.pl/ko%C5%9Bci_craps_online.html)
+
+![craps](./misc/craps-table.jpg)
