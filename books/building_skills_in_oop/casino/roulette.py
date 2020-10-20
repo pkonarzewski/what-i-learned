@@ -7,6 +7,7 @@ from enum import Enum
 from abc import ABC, abstractmethod
 from typing import Iterator, List, Type, Set
 from math import sqrt
+from fractions import Fraction
 
 from casino.base import InvalidBet, Outcome
 
@@ -207,7 +208,7 @@ class Bet:
 
     def win_amount(self) -> int:
         """Uses the Outcome’s winAmount to compute the amount won"""
-        return self.amount + self.amount * self.outcome.odds
+        return int(self.amount + self.amount * self.outcome.odds)
 
     def lose_amount(self) -> int:
         """Returns the amount lost. This is the cost of placing the bet."""
