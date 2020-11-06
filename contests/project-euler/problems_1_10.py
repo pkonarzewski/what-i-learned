@@ -107,30 +107,84 @@ print('golden ratio O(n)')
 The prime factors of 13195 are 5, 7, 13 and 29.
 What is the largest prime factor of the number 600851475143 ?
 """
-from math import sqrt, ceil
+from math import floor, sqrt, ceil
 
-def largest_prime_number_simple(n):
+def is_prime(n):
+    if n < 2:
+        return False
+    else:
+        for i in range(2, floor(sqrt(n)+1)):
+            if n % i == 0:
+                return False
+        return True
+
+def prime_number_simple(n):
     primes = []
-    prime_asymptot = ceil(sqrt(n))
+    prime_asymptot = floor(sqrt(n))
 
-    i = 2
-    while i <= n:
-
+    for i in range(2, prime_asymptot + 1):
+        if n  % i == 0:
+            if is_prime(i):
+                primes.append(i)
 
     return primes
 
-print(largest_prime_number_simple(20))
 
-# print(largest_prime_number_simple(13195))
-# assert largest_prime_number_simple(13195) == 29
-# print(largest_prime_number_simple(600851475143))
+print(prime_number_simple(13195))
+assert max(prime_number_simple(13195)) == 29
+print(prime_number_simple(600851475143))
 
 
-# %%
-def algo_euk(a, b):
-    c = a - b
-    if c <=ikl.k 0:
-        return a
-    else:
-        if a > b:
-            algo_euk
+%timeit prime_number_simple(600851475143)
+#%% PROBLEM 4 - Largest palindrome product
+"""
+A palindromic number reads the same both ways. The largest palindrome made from the product of two 2-digit numbers is 9009 = 91 × 99.
+Find the largest palindrome made from the product of two 3-digit numbers.
+"""
+
+def palindrome_product(digits):
+    min_number = 10**(digits - 1)
+    max_number = 10**digits - 1
+    max_product = 1
+
+    for i in range(max_number, min_number - 1, -1):
+        if i**2 > max_product:
+            for j in range(i, min_number - 1, -1):
+                prod = i * j
+                if str(prod) == (str(prod))[::-1] and prod > max_product:
+                    max_product = prod
+                    break
+
+    return max_product
+
+
+print(palindrome_product(2))
+print(palindrome_product(3))
+print(palindrome_product(4))
+
+assert palindrome_product(2) == 9009
+
+%timeit palindrome_product(4)
+
+#%%
+def reverse_integer(number):
+    """Test int reverse without casting to str."""
+
+    digits = []
+    new_digit = 0
+    no_digits = 0
+
+    while number > 0:
+        dig = number % 10
+        digits.append(dig)
+
+        number //=10
+        no_digits += 1
+
+    reversed_number = 0
+    for n in range(no_digits, 0, -1):
+        reversed_number += digits[n]*10**n
+
+    return reversed_number
+
+print(reverse_integer(123))
