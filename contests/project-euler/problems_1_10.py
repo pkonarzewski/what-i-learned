@@ -201,7 +201,8 @@ from generic import factorization, product_of_list
 from math import factorial
 
 
-def smallest_multiple(no_range: int) -> int:
+def smallest_multiple_bruteforce(no_range: int) -> int:
+    """Very lame approche."""
     lcm = product_of_list(factorization(factorial(no_range)))
     range_product = product_of_list([x for x in range(1, no_range + 1)])
 
@@ -226,4 +227,4 @@ def smallest_multiple(no_range: int) -> int:
             return num
 
 
-smallest_multiple(20)
+smallest_multiple_bruteforce(20)
