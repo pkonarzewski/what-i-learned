@@ -127,5 +127,7 @@ dmypy.json
 # IDEs
 .vscode/
 .idea/
+*.code-workspace
 
 /tmp
+/_scratchpad
