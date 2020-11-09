@@ -202,7 +202,7 @@ from math import factorial
 
 
 def smallest_multiple_bruteforce(no_range: int) -> int:
-    """Very lame approche."""
+    """Better? approach."""
     factors = []
     for i in range(1, no_range+1):
         factors.extend(factorization(i))
@@ -232,5 +232,24 @@ assert smallest_multiple_bruteforce(10) == 2520
 smallest_multiple_bruteforce(20)
 
 %timeit smallest_multiple_bruteforce(40)
+
+# %% PROBLEM 6 - Sum square difference
+"""
+The sum of the squares of the first ten natural numbers is 385,
+The square of the sum of the first ten natural numbers is 3025,
+Hence the difference between the sum of the squares of the first ten natural numbers
+and the square of the sum is. Find the difference between the sum of the squares of the
+first one hundred natural numbers and the square of the sum.
+"""
+
+def sum_square_diff(n):
+    sum_sqr = sum([x**2 for x in range(1, n + 1)])
+    sqr_sum = sum([x for x in range(1, n + 1)])**2
+
+    return sqr_sum - sum_sqr
+
+
+assert sum_square_diff(10) == 2640
+print(sum_square_diff(100))
 
 # %%
