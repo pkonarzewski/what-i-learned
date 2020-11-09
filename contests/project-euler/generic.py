@@ -1,4 +1,4 @@
-from math import floor, sqrt, factorial
+from math import floor,ceil, sqrt, factorial
 
 
 def is_prime(n):
@@ -13,7 +13,11 @@ def is_prime(n):
 
 def factorization(n):
     factors = []
-    asymptot = floor(sqrt(n))
+
+    if n > 100:
+        asymptot = ceil(sqrt(n))
+    else:
+        asymptot = n
 
     for i in range(2, asymptot + 1):
         if n % i == 0:

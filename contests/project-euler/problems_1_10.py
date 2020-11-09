@@ -203,10 +203,11 @@ from math import factorial
 
 def smallest_multiple_bruteforce(no_range: int) -> int:
     """Very lame approche."""
-    lcm = product_of_list(factorization(factorial(no_range)))
+    factors = []
+    for i in range(1, no_range+1):
+        factors.extend(factorization(i))
+    lcm = product_of_list(set(factors))
     range_product = product_of_list([x for x in range(1, no_range + 1)])
-
-    print(lcm, range_product)
 
     multi = 0
     result = None
@@ -227,4 +228,9 @@ def smallest_multiple_bruteforce(no_range: int) -> int:
             return num
 
 
+assert smallest_multiple_bruteforce(10) == 2520
 smallest_multiple_bruteforce(20)
+
+%timeit smallest_multiple_bruteforce(40)
+
+# %%
