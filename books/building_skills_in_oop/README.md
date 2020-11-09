@@ -12,4 +12,6 @@
 
 ### Craps
 
-![kosci](./misc/craps.png)
+[Rules pl](https://ikasyna.pl/ko%C5%9Bci_craps_online.html)
+
+![craps](./misc/craps-table.jpg)

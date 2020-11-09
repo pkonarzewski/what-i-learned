@@ -1,11 +1,11 @@
 # 1.5
 #%%
 from typing import TypeVar, Generic, List
-T = TypeVar('T')
+
+T = TypeVar("T")
 
 
 class Stack(Generic[T]):
-
     def __init__(self, name) -> None:
         self.name = name
         self._container: List[T] = []
@@ -26,30 +26,31 @@ class Stack(Generic[T]):
 
 def hanoi(begin: Stack[int], end: Stack[int], temp: Stack[int], n: int) -> None:
     if n == 1:
-        print(f'{begin.name} > {end.name}')
+        print(f"{begin.name} > {end.name}")
         end.push(begin.pop())
     else:
-        hanoi(begin, temp, end, n-1)
+        hanoi(begin, temp, end, n - 1)
         hanoi(begin, end, temp, 1)
-        hanoi(temp, end, begin, n-1)
+        hanoi(temp, end, begin, n - 1)
 
 
 num_discs: int = 3
-tower_a: Stack[int] = Stack(name='A')
-tower_b: Stack[int] = Stack(name='B')
-tower_c: Stack[int] = Stack(name='C')
+tower_a: Stack[int] = Stack(name="A")
+tower_b: Stack[int] = Stack(name="B")
+tower_c: Stack[int] = Stack(name="C")
 
-for i in range(1, num_discs+1):
+for i in range(1, num_discs + 1):
     tower_a.push(i)
 
-print('start >>', tower_a, tower_b, tower_c)
+print("start >>", tower_a, tower_b, tower_c)
 
 hanoi(tower_a, tower_c, tower_b, num_discs)
 
-print('end >>', tower_a, tower_b, tower_c)
+print("end >>", tower_a, tower_b, tower_c)
 
 
 #%% Hanoi printer
+
 
 def tower(disk_numbers, source, auxilary, destination):
     if disk_numbers == 1:
@@ -61,4 +62,4 @@ def tower(disk_numbers, source, auxilary, destination):
         tower(disk_numbers - 1, auxilary, source, destination)
 
 
-tower(3, 'source', 'aux', 'dest')
+tower(3, "source", "aux", "dest")

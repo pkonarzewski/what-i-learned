@@ -25,22 +25,6 @@ from casino.roulette import (
 )
 
 
-def test_outcome():
-    o1 = Outcome("Red", 1)
-    o2 = Outcome("Red", 1)
-    o3 = Outcome("Black", 2)
-    assert str(o1) == "Red (1:1)"
-    assert repr(o2) == "Outcome(name='Red', odds=1)"
-    assert o1 == o2
-    assert o1.odds == 1
-    assert o1.name == "Red"
-    assert o1 != o3
-    assert o2 != o3
-
-    assert o1.win_amount(5) == 5
-    assert o3.win_amount(5) == 10
-
-
 def test_bin():
     o1 = Outcome("Red", 1)
     o2 = Outcome("Black", 2)
@@ -169,8 +153,8 @@ def test_table():
     table.limit = 300
     assert str(table) == "Table(bets amount=210)"
     assert repr(table) == (
-        "Table(Bet(amount=10, outcome=Outcome(name='Red', odds=1)), "
-        "Bet(amount=200, outcome=Outcome(name='Red', odds=1)))"
+        "Table(Bet(amount=10, outcome=Outcome(name='Red', odds=Fraction(1, 1))), "
+        "Bet(amount=200, outcome=Outcome(name='Red', odds=Fraction(1, 1))))"
     )
 
     with pytest.raises(InvalidBet):
