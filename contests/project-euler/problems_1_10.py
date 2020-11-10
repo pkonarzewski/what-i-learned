@@ -259,16 +259,12 @@ print(sum_square_diff(100))
 def sum_square_diff_2(n):
     """Using sequence formulas."""
 
-    sqr_sum = n*(n+1)/2
-    # sum_sqr =
-    # sum_sqr = ((n + 1)/2*n)**2
-    # print(sum_sqr)
+    sqr_sum = ((1+n)*(n/2))**2
     sum_sqr = ((n * (n+1)) * (n + (n+1)))/6
     return sqr_sum - sum_sqr
 
 
-# assert sum_square_diff_2(10) == 2640
-print(sum_square_diff_2(10))
+assert sum_square_diff_2(10) == 2640
 print(sum_square_diff_2(100))
 
 # %%
