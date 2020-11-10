@@ -242,14 +242,33 @@ and the square of the sum is. Find the difference between the sum of the squares
 first one hundred natural numbers and the square of the sum.
 """
 
-def sum_square_diff(n):
-    sum_sqr = sum([x**2 for x in range(1, n + 1)])
-    sqr_sum = sum([x for x in range(1, n + 1)])**2
+def sum_square_diff(limit):
+    "Brute force approach"
+    sum_sqr = sum([x**2 for x in range(1, limit + 1)])
+    sqr_sum = sum([x for x in range(1, limit + 1)])**2
+
+    print(sum_sqr)
 
     return sqr_sum - sum_sqr
 
 
 assert sum_square_diff(10) == 2640
 print(sum_square_diff(100))
+
+#%%
+def sum_square_diff_2(n):
+    """Using sequence formulas."""
+
+    sqr_sum = n*(n+1)/2
+    # sum_sqr =
+    # sum_sqr = ((n + 1)/2*n)**2
+    # print(sum_sqr)
+    sum_sqr = ((n * (n+1)) * (n + (n+1)))/6
+    return sqr_sum - sum_sqr
+
+
+# assert sum_square_diff_2(10) == 2640
+print(sum_square_diff_2(10))
+print(sum_square_diff_2(100))
 
 # %%
