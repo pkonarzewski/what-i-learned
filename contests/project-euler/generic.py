@@ -14,12 +14,7 @@ def is_prime(n):
 def factorization(n):
     factors = []
 
-    if n > 100:
-        asymptot = ceil(sqrt(n))
-    else:
-        asymptot = n
-
-    for i in range(2, asymptot + 1):
+    for i in range(2, n + 1):
         if n % i == 0:
             if is_prime(i):
                 factors.append(i)
