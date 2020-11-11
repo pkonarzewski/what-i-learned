@@ -267,4 +267,32 @@ def sum_square_diff_2(n):
 assert sum_square_diff_2(10) == 2640
 print(sum_square_diff_2(100))
 
+# %% PROBLEM 7
+"""
+By listing the first six prime numbers: 2, 3, 5, 7, 11, and 13, we can see that the 6th
+prime is 13.
+What is the 10 001st prime number?
+"""
+from generic import is_prime
+
+
+def nth_prime(n):
+    "Brute force."
+
+    if n == 1:
+        return 2
+    else:
+        value = 3
+        nth = 2
+        while nth < n:
+            value += 2
+            if is_prime(value):
+                nth += 1
+
+    return value
+
+
+assert nth_prime(6) == 13
+print(nth_prime(10001))
+
 # %%
