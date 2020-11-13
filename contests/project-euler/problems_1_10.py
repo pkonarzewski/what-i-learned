@@ -377,16 +377,25 @@ print(largest_product_in_series_fuu(number, 13))
 # %% PROBLEM 9 - Special Pythagorean triplet
 """
 A Pythagorean triplet is a set of three natural numbers, a < b < c, for which,
-a2 + b2 = c2
+a^2 + b^2 = c^2
 For example, 3^2 + 4^2 = 9 + 16 = 25 = 5^2.
 There exists exactly one Pythagorean triplet for which a + b + c = 1000.
 Find the product abc.
 """
 
 
-def pythagorean_triplet(c):
-    return
+def pythagorean_triplet(elements_sum):
+    for a in range(1, elements_sum - 3):
+        for b in range(a + 1, elements_sum - a - 1):
+            c = elements_sum - a - b
 
+            if a**2 + b**2 == c**2:
+                print("Result:", a, b, c)
+                return a*b*c
 
-print(pythagorean_triplet(25)) # == (3*4*5)
+# print(pythagorean_triplet(6))
+
+assert pythagorean_triplet(12) == 60
 print(pythagorean_triplet(1000))
+
+# %%
