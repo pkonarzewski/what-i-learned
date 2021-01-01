@@ -1,6 +1,6 @@
 #%%
 def counting_sort(input, k):
-    c = [0 for _ in range(k + 1)]  # O(k)
+    c = [0 for _ in range(k)]  # O(k)
     output = [None for _ in range(len(input))]  # O(n)
 
     for num in input:  # O(n)
@@ -16,4 +16,6 @@ def counting_sort(input, k):
     return output
 
 
-counting_sort([5,3,6,7,8,2,1,3,6,3,3,5], k=8)
+counting_sort([5,3,6,7,8,2,1,3,6,3,3,5], k=9)
+
+# %%
