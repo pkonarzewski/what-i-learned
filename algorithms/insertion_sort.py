@@ -14,4 +14,6 @@ def insertion_sort(arr):
     return arr
 
 
-insertion_sort([8, 8, 1, 5, 3, 2, 1, 9, 6])
+input_arr = [8, 8, 1, 5, 3, 2, 1, 9, 6]
+print(insertion_sort(input_arr))
+assert insertion_sort(input_arr) == sorted(input_arr)

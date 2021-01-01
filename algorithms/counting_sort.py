@@ -20,6 +20,7 @@ def counting_sort(input, k):
     return output
 
 
-counting_sort([5, 3, 6, 7, 8, 2, 1, 3, 6, 3, 3, 5], k=9)
-
+input_arr = [5, 3, 6, 7, 8, 2, 1, 3, 6, 3, 3, 5]
+print(counting_sort(input_arr, k=9))
+assert counting_sort(input_arr, k=9) == sorted(input_arr)
 # %%
