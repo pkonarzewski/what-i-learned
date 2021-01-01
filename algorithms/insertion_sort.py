@@ -1,12 +1,15 @@
 #%%
 def insertion_sort(arr):
     """Insertion sort."""
-    for i in range(1, len(arr)):
-        j = i - 1
+    for i in range(1, len(arr)):  # O(n)
+        key = arr[i]
 
-        while arr[j+1] < arr[j] and j >= 0:
-            arr[j+1], arr[j] = arr[j], arr[j+1]
+        j = i - 1
+        while key < arr[j] and j >= 0:  # O(n)
+            arr[j + 1] = arr[j]
             j -= 1
+
+        arr[j + 1] = key
 
     return arr
 
