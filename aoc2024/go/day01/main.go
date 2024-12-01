@@ -18,6 +18,7 @@ func main() {
 		fmt.Println(err)
 	}
 
+	// https://golangdocs.com/golang-read-file-line-by-line
 	fileScanner := bufio.NewScanner(readFile)
 	fileScanner.Split(bufio.ScanLines)
 
