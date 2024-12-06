@@ -42,7 +42,7 @@ func main() {
 	var simScore int = 0
 
 	for i := range listOne {
-		listDiff += int(math.Abs(float64(listOne[i] - listTwo[i]))) // there is no abc(int) function
+		listDiff += int(math.Abs(float64(listOne[i] - listTwo[i]))) // there is no abs(int) function
 		simScore += listOne[i] * listTwoCounter[listOne[i]]         // https://go.dev/blog/maps
 
 	}
