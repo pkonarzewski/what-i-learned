@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 
-mul_pattern = re.compile(r"mul\((\d+),(\d+)\)")
+mul_pattern = re.compile(r"^mul\((\d+),(\d+)\)")
 
 enabler = True
 
