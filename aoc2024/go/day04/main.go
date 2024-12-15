@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"sort"
+	"strings"
 )
 
 type Matrix struct {
@@ -69,15 +71,36 @@ func (r Matrix) FindXmas(pos int) int {
 
 func (r Matrix) matchXmas(vec [5]string) int {
 	if vec == [5]string{"X", "M", "A", "S"} {
-		fmt.Println("MATCH", vec)
+		// fmt.Println("MATCH", vec)
 		return 1
 	}
 	return 0
 }
 
-func main() {
+func (r Matrix) findXmas2(pos int) int {
+	expVal := "AMMSS"
 
-	var found_xmas int
+	if pos <= r.Y || pos >= len(r.Data)-r.Y || pos%r.Y == 0 || pos%r.Y == r.Y-1 {
+		return 0
+	}
+
+	if r.Data[pos-1-1*r.Y] == r.Data[pos+1+1*r.Y] {
+		return 0
+	}
+
+	fmt.Println(r.GetPos(pos))
+	vals := []string{"A", r.Data[pos+1-1*r.Y], r.Data[pos+1+1*r.Y], r.Data[pos-1+1*r.Y], r.Data[pos-1-1*r.Y]}
+	sort.Strings(vals)
+	abc := strings.Join(vals, "")
+	fmt.Println(abc)
+	if abc == expVal {
+		return 1
+	}
+
+	return 0
+}
+
+func main() {
 
 	matrix, err := input_to_matrix(os.Args[1])
 
@@ -86,17 +109,28 @@ func main() {
 		return
 	}
 
+	var found_xmas1 int
 	for i, val := range matrix.Data {
 		if val != "X" {
 			continue
 		}
 		found := matrix.FindXmas(i)
-		found_xmas += found
+		found_xmas1 += found
 
 	}
 
-	fmt.Println("Found XMAS:", found_xmas)
+	fmt.Println("Found XMAS (part 1):", found_xmas1)
 
+	var found_xmas2 int
+	for i, val := range matrix.Data {
+		if val != "A" {
+			continue
+		}
+		found_xmas2 += matrix.findXmas2(i)
+
+	}
+
+	fmt.Println("Found XMAS (part 2):", found_xmas2)
 }
 
 func input_to_matrix(inputName string) (Matrix, error) {
