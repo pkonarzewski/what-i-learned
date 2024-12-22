@@ -22,7 +22,7 @@ def load(fname: str) -> Matrix:
     res: list[list[int]] = []
     with (Path.cwd() / "input" / fname).open(mode="r") as f:
         for line in f:
-            res.append(list(line.strip()))
+            res.append(list(map(int, line.strip())))
 
     return Matrix(res)
 
