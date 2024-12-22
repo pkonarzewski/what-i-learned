@@ -4,145 +4,21 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"sort"
-	"strings"
+	"slices"
 )
 
-type Matrix struct {
-	Data []string
-	X    int
-	Y    int
-}
+const XMAS = "XMAS"
+const MAS = "MAS"
 
-func (r Matrix) Get(y int, x int) string {
-	return r.Data[r.Y*y+x]
-}
-
-func (r Matrix) GetPos(pos int) (y int, x int) {
-	return pos / r.Y, pos % r.Y
-}
-
-func (r Matrix) FindXmas(pos int) int {
-	var foundMatch int
-	y, x := r.GetPos(pos)
-
-	if x+4 <= r.X {
-		fmt.Println("right")
-		foundMatch += r.matchXmas([5]string{r.Data[pos], r.Data[pos+1], r.Data[pos+2], r.Data[pos+3]})
-	}
-
-	if x-3 >= 0 {
-		fmt.Println("left")
-		foundMatch += r.matchXmas([5]string{r.Data[pos], r.Data[pos-1], r.Data[pos-2], r.Data[pos-3]})
-	}
-
-	if y+4 <= r.Y {
-		fmt.Println("down")
-		foundMatch += r.matchXmas([5]string{r.Data[pos], r.Data[pos+1*r.Y], r.Data[pos+2*r.Y], r.Data[pos+3*r.Y]})
-	}
-
-	if y-3 >= 0 {
-		fmt.Println("up")
-		foundMatch += r.matchXmas([5]string{r.Data[pos], r.Data[pos-1*r.Y], r.Data[pos-2*r.Y], r.Data[pos-3*r.Y]})
-	}
-
-	if y-3 >= 0 && x+4 <= r.X {
-		fmt.Println("up-right")
-		foundMatch += r.matchXmas([5]string{r.Data[pos], r.Data[pos+1-1*r.Y], r.Data[pos+2-2*r.Y], r.Data[pos+3-3*r.Y]})
-	}
-
-	if y+4 <= r.Y && x-3 >= 0 {
-		fmt.Println("down-left")
-		foundMatch += r.matchXmas([5]string{r.Data[pos], r.Data[pos-1+1*r.Y], r.Data[pos-2+2*r.Y], r.Data[pos-3+3*r.Y]})
-	}
-
-	if y-3 >= 0 && x-3 >= 0 {
-		fmt.Println("up-left")
-		foundMatch += r.matchXmas([5]string{r.Data[pos], r.Data[pos-1-1*r.Y], r.Data[pos-2-2*r.Y], r.Data[pos-3-3*r.Y]})
-	}
-
-	if y+4 <= r.Y && x+4 <= r.X {
-		fmt.Println("down-right")
-		foundMatch += r.matchXmas([5]string{r.Data[pos], r.Data[pos+1+1*r.Y], r.Data[pos+2+2*r.Y], r.Data[pos+3+3*r.Y]})
-	}
-
-	return foundMatch
-}
-
-func (r Matrix) matchXmas(vec [5]string) int {
-	if vec == [5]string{"X", "M", "A", "S"} {
-		// fmt.Println("MATCH", vec)
-		return 1
-	}
-	return 0
-}
-
-func (r Matrix) findXmas2(pos int) int {
-	expVal := "AMMSS"
-
-	if pos <= r.Y || pos >= len(r.Data)-r.Y || pos%r.Y == 0 || pos%r.Y == r.Y-1 {
-		return 0
-	}
-
-	if r.Data[pos-1-1*r.Y] == r.Data[pos+1+1*r.Y] {
-		return 0
-	}
-
-	fmt.Println(r.GetPos(pos))
-	vals := []string{"A", r.Data[pos+1-1*r.Y], r.Data[pos+1+1*r.Y], r.Data[pos-1+1*r.Y], r.Data[pos-1-1*r.Y]}
-	sort.Strings(vals)
-	abc := strings.Join(vals, "")
-	fmt.Println(abc)
-	if abc == expVal {
-		return 1
-	}
-
-	return 0
-}
-
-func main() {
-
-	matrix, err := input_to_matrix(os.Args[1])
-
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	var found_xmas1 int
-	for i, val := range matrix.Data {
-		if val != "X" {
-			continue
-		}
-		found := matrix.FindXmas(i)
-		found_xmas1 += found
-
-	}
-
-	fmt.Println("Found XMAS (part 1):", found_xmas1)
-
-	var found_xmas2 int
-	for i, val := range matrix.Data {
-		if val != "A" {
-			continue
-		}
-		found_xmas2 += matrix.findXmas2(i)
-
-	}
-
-	fmt.Println("Found XMAS (part 2):", found_xmas2)
-}
-
-func input_to_matrix(inputName string) (Matrix, error) {
-	var matrix []string
-	y := 0
-	x := 0
+func load(inputName string) ([]string, int, error) {
+	var input []string
+	var row_len int
 
 	readFile, err := os.Open("input/" + inputName)
 	defer readFile.Close()
 
 	if err != nil {
-		return Matrix{}, err
+		return nil, 0, err
 	}
 
 	fileScanner := bufio.NewScanner(readFile)
@@ -150,15 +26,104 @@ func input_to_matrix(inputName string) (Matrix, error) {
 
 	for fileScanner.Scan() {
 		row := fileScanner.Text()
+		row_len = len(row)
 
 		for _, char := range row {
-			matrix = append(matrix, string(char))
+			input = append(input, string(char))
 		}
 
-		y++
-		if x == 0 {
-			x = len(row)
-		}
 	}
-	return Matrix{Data: matrix, X: x, Y: y}, nil
+	return input, row_len, nil
+}
+
+func find_xmas(input []string, row_len int) {
+	found_xmas := 0
+	var found_vectors [][4]int
+	for i := 0; i < len(input); i++ {
+		if input[i] != "X" {
+			continue
+		}
+
+		for drow := -1; drow <= 1; drow++ {
+			for dcol := -1; dcol <= 1; dcol++ {
+
+				if i+3*dcol+3*drow*row_len < 0 || i+3*dcol+3*drow*row_len > len(input)-1 {
+					continue
+				}
+
+				if (i+3*dcol)/row_len != i/row_len {
+					// spil over to next line
+					continue
+				}
+
+				found_str := ""
+
+				var vector [4]int
+				for n := 0; n < 4; n++ {
+					found_str += input[i+n*dcol+n*drow*row_len]
+					vector[n] = i + n*dcol + n*drow*row_len
+				}
+
+				if found_str == XMAS {
+					// fmt.Println(i, vector)
+					found_xmas++
+
+					if slices.Contains(found_vectors, vector) {
+						panic("Duplicate")
+					}
+
+					found_vectors = append(found_vectors, vector)
+
+				}
+			}
+		}
+
+	}
+
+	fmt.Println(found_xmas)
+}
+
+func findMasX(input []string, row_len int) {
+	answer := 0
+
+	for i := row_len - 1; i < len(input)-row_len; i++ {
+		found := ""
+
+		if input[i] != "A" {
+			continue
+		}
+
+		if i%row_len == 0 || i%row_len == row_len-1 {
+			fmt.Println(i)
+			continue
+		}
+
+		for drow := -1; drow <= 1; drow += 2 {
+			for dcol := -1; dcol <= 1; dcol += 2 {
+				found += input[i+drow*row_len+dcol]
+			}
+		}
+
+		if found == "MMSS" || found == "MSMS" || found == "SSMM" || found == "SMSM" {
+			answer++
+		}
+
+	}
+
+	fmt.Println("Found MAS-X:", answer)
+}
+
+func main() {
+
+	input, row_len, err := load(os.Args[1])
+
+	if err != nil {
+		fmt.Println(err)
+		return
+
+	}
+
+	find_xmas(input, row_len)
+	// findMasX(input, row_len)
+
 }
