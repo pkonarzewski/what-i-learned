@@ -38,8 +38,27 @@ def is_correct_order(page_order: dict[int, set[int]], pages: tuple[int]) -> bool
     return True
 
 
-def check_manual_order(page_order, pages_list) -> int:
-    answer = 0
+def fix_order_manual(
+    page_order: dict[int, set[int]], pages: tuple[int]
+) -> tuple[int, ...]:
+    reordered = list(pages)
+
+    i = 0
+    while i < len(reordered) - 1:
+        node = page_order.get(reordered[i], None)
+
+        if node is not None and set(reordered[i + 1 :]).issubset(node):
+            i += 1
+            continue
+
+        reordered.append(reordered.pop(i))
+
+    return tuple(reordered)
+
+
+def check_manual_order(page_order, pages_list) -> tuple[int, int]:
+    correct_answer = 0
+    fixed_answer = 0
 
     order_graph = defaultdict(set)
 
@@ -48,12 +67,18 @@ def check_manual_order(page_order, pages_list) -> int:
 
     for pages in pages_list:
         if is_correct_order(order_graph, pages):
-            answer += pages[len(pages) // 2]
+            correct_answer += pages[len(pages) // 2]
+        else:
+            fixed_pages = fix_order_manual(order_graph, pages)
+            fixed_answer += fixed_pages[len(pages) // 2]
 
-    return answer
+    return correct_answer, fixed_answer
 
 
 if __name__ == "__main__":
     page_order, pages = load(Path(sys.argv[1]))
 
-    print("Answer 1:", check_manual_order(page_order, pages))
+    corr_ans, fixed_ans = check_manual_order(page_order, pages)
+
+    print("Answer 1:", corr_ans)
+    print("Answer 2:", fixed_ans)
