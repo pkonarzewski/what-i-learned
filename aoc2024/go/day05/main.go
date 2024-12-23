@@ -87,7 +87,6 @@ func isCorrect(pageMap map[int][]int, pages []int) bool {
 }
 
 func fixOrder(pageMap map[int][]int, pages []int) []int {
-	fmt.Println("===", pages)
 
 	i := 0
 	for i < len(pages)-1 { // while loop in Go
@@ -95,15 +94,11 @@ func fixOrder(pageMap map[int][]int, pages []int) []int {
 		posVal := pages[i]
 		node := pageMap[posVal]
 
-		fmt.Println(posVal, node)
-
 		for _, val := range pages[i+1:] {
 			if !slices.Contains(node, val) {
-				fmt.Println("<>", posVal)
 
 				pages = append(pages[:i], pages[i+1:]...)
 				pages = append(pages, posVal)
-				// fmt.Println(fixed)
 
 				i--
 				break
@@ -113,7 +108,6 @@ func fixOrder(pageMap map[int][]int, pages []int) []int {
 		i++
 
 	}
-	fmt.Println(">", pages)
 	return pages
 }
 
@@ -130,7 +124,6 @@ func main() {
 	orderMap := createManualMap(pageOrder)
 
 	for _, page := range pagesSets {
-		// fmt.Println("Check pages:", page)
 		if isCorrect(orderMap, page) {
 			correctAnswer += page[len(page)/2]
 		} else {
