@@ -31,7 +31,7 @@ def load(path: Path) -> tuple[list[int], int, int]:
     return lab, lab_width, start_pos
 
 
-def walk_my_guard(lab: list[int], lab_width: int, start_pos: int) -> int:
+def walk_my_guard(lab: list[int], lab_width: int, start_pos: int) -> set[int]:
     visited: set[int] = {start_pos}
     directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]
     cdir = 0
@@ -43,14 +43,14 @@ def walk_my_guard(lab: list[int], lab_width: int, start_pos: int) -> int:
         i += 1
         delta = directions[cdir]
         next_pos = pos + delta[0] * lab_width + delta[1]
-        print(pos // lab_width, ":", pos % lab_width, "-", pos)
+        # print(pos // lab_width, ":", pos % lab_width, "-", pos)
 
         if (
             next_pos > len(lab)
             or next_pos < 0
             or (delta[0] == 0 and (pos // lab_width != next_pos // lab_width))
         ):
-            return len(visited)
+            return visited
 
         if lab[next_pos] == FLOOR:
             visited.add(next_pos)
@@ -61,9 +61,51 @@ def walk_my_guard(lab: list[int], lab_width: int, start_pos: int) -> int:
         pos = next_pos
 
 
+def walk_my_guard_forever(
+    lab: list[int], lab_width: int, start_pos: int, obst_pos: int
+) -> bool:
+    directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]
+    cdir = 0
+
+    pos = start_pos
+
+    obs = set()
+
+    while True:
+        delta = directions[cdir]
+        next_pos = pos + delta[0] * lab_width + delta[1]
+        # print(pos // lab_width, ":", pos % lab_width, "-", pos)
+
+        if (
+            next_pos > len(lab)
+            or next_pos < 0
+            or (delta[0] == 0 and (pos // lab_width != next_pos // lab_width))
+        ):
+            return False
+
+        if lab[next_pos] == OBST and (pos, next_pos) in obs:
+            return True
+
+        if lab[next_pos] == OBST:
+            cdir = (cdir + 1) % 4
+            obs.add((pos, next_pos))
+            continue
+
+        pos = next_pos
+
+
 if __name__ == "__main__":
     lab, lab_width, start_pos = load(Path(sys.argv[1]))
     # print(lab, start_pos)
     visited_tiles = walk_my_guard(lab, lab_width, start_pos)
+    no_of_cycles = 0
+    for pos in visited_tiles:
+        if pos == start_pos:
+            continue
 
-    print("Visited tiles by guard:", visited_tiles)
+        new_lab = lab.copy()
+        new_lab[pos] = OBST
+        no_of_cycles += walk_my_guard_forever(new_lab, lab_width, start_pos, pos)
+
+    print("Visited tiles by guard:", len(visited_tiles))
+    print("Time cycles generated:", no_of_cycles)
