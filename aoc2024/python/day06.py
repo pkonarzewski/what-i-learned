@@ -38,9 +38,7 @@ def walk_my_guard(lab: list[bool], lab_width: int, start_pos: int) -> set[int]:
 
     pos = start_pos
 
-    i = 0
     while True:
-        i += 1
         delta = directions[cdir]
         next_pos = pos + delta[0] * lab_width + delta[1]
         # print(pos // lab_width, ":", pos % lab_width, "-", pos)
@@ -86,7 +84,7 @@ def walk_my_guard_forever(
         if lab[next_pos] == OBST and (pos, next_pos) in obs:
             return True
 
-        if lab[next_pos] == OBST:
+        if lab[next_pos] == OBST or next_pos == obst_pos:
             cdir = (cdir + 1) % 4
             obs.add((pos, next_pos))
             continue
@@ -103,9 +101,7 @@ if __name__ == "__main__":
         if pos == start_pos:
             continue
 
-        new_lab = lab.copy()
-        new_lab[pos] = OBST
-        no_of_cycles += walk_my_guard_forever(new_lab, lab_width, start_pos, pos)
+        no_of_cycles += walk_my_guard_forever(lab, lab_width, start_pos, pos)
 
     print("Visited tiles by guard:", len(visited_tiles))
     print("Time cycles generated:", no_of_cycles)
