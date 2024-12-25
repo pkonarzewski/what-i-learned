@@ -1,12 +1,12 @@
 import sys
 from pathlib import Path
 
-FLOOR = 0
-OBST = 1
+FLOOR = False
+OBST = True
 
 
-def load(path: Path) -> tuple[list[int], int, int]:
-    lab: list[int] = []
+def load(path: Path) -> tuple[list[bool], int, int]:
+    lab: list[bool] = []
     start_pos: int = -1
     lab_width: int = -1
 
@@ -31,7 +31,7 @@ def load(path: Path) -> tuple[list[int], int, int]:
     return lab, lab_width, start_pos
 
 
-def walk_my_guard(lab: list[int], lab_width: int, start_pos: int) -> set[int]:
+def walk_my_guard(lab: list[bool], lab_width: int, start_pos: int) -> set[int]:
     visited: set[int] = {start_pos}
     directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]
     cdir = 0
@@ -62,7 +62,7 @@ def walk_my_guard(lab: list[int], lab_width: int, start_pos: int) -> set[int]:
 
 
 def walk_my_guard_forever(
-    lab: list[int], lab_width: int, start_pos: int, obst_pos: int
+    lab: list[bool], lab_width: int, start_pos: int, obst_pos: int
 ) -> bool:
     directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]
     cdir = 0
